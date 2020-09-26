@@ -1,0 +1,79 @@
+创建列表对象，两种方法：
+li = list([1,2,3,4])
+li = list((1,2,3,4))  #或者还可以用括号
+li = [1,2,3,4]
+
+>>> li = list([1,2,3,4])
+>>> type(li)
+<class 'list'>
+>>> li = list((1,2,3,4))
+>>> type(li)
+<class 'list'>
+>>> li = [1,2,3,4]
+>>> type(li)
+<class 'list'>
+
+append()，在列表尾部添加元素
+clear(), 清空列表
+copy(), 复制列表，浅拷贝 深拷贝：不管里面有多少层，全部拷贝； 以后再学习
+count(), 判断某个元素出现的次数
+extend(), 合并列表，列表可以合并元组，生成新的列表
+insert(), 指定位置放元素
+pop(), 弹出一个元素，pop()会有一个返回值，例如ret = li.pop(), ret就是弹出的元素，pop()里面可以放数字，弹出指定下标的元素
+remove(), 删除元素，这里remove('value') 这里里面的参数是值，不是下标
+reverse(), 反转列表元素，直接回改变列表
+sort(), 排序
+
+#!/usr/bin/env python
+li = [1,2,3,4,'a','b','c','d','a','e','f',]
+li.append('w')
+print("下面打印出append了的列表，注意是直接改变了列表的元素：")
+print(li)
+print("打印count()计算a元素出现的次数：")
+print(li.count('a'))
+li.extend(('aa','bb','cc',)) # 元组也可以extend，为了不造成视觉混淆，起始可以在最后一个元素后面加上逗号
+print("打印出extend()后的列表：")
+print(li)
+li.insert(2,'11')
+print("打印出insert()后的列表：")
+print(li)
+rej = li.pop(-2)
+print("打印出弹出的列表元素和弹出后的列表：")
+print(rej)
+print(li)
+li.remove('a')  #这里其实只能删除一个'a'元素
+print("打印删除了一个'a'元素后的列表：")
+print(li)
+li.reverse()
+print("打印反转后的列表:")
+print(li)
+"""
+这里注释掉，sort()不能排序数字和字符串
+li.sort()
+print("打印排序后的列表：")
+print(li)
+"""
+li.clear()
+print("清空列表：")
+print(li)
+
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+下面打印出append了的列表，注意是直接改变了列表的元素：
+[1, 2, 3, 4, 'a', 'b', 'c', 'd', 'a', 'e', 'f', 'w']
+打印count()计算a元素出现的次数：
+2
+打印出extend()后的列表：
+[1, 2, 3, 4, 'a', 'b', 'c', 'd', 'a', 'e', 'f', 'w', 'aa', 'bb', 'cc']
+打印出insert()后的列表：
+[1, 2, '11', 3, 4, 'a', 'b', 'c', 'd', 'a', 'e', 'f', 'w', 'aa', 'bb', 'cc']
+打印出弹出的列表元素和弹出后的列表：
+bb
+[1, 2, '11', 3, 4, 'a', 'b', 'c', 'd', 'a', 'e', 'f', 'w', 'aa', 'cc']
+打印删除了一个'a'元素后的列表：
+[1, 2, '11', 3, 4, 'b', 'c', 'd', 'a', 'e', 'f', 'w', 'aa', 'cc']
+打印反转后的列表:
+['cc', 'aa', 'w', 'f', 'e', 'a', 'd', 'c', 'b', 4, 3, '11', 2, 1]
+清空列表：
+[]
+
+Process finished with exit code 0

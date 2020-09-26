@@ -1,0 +1,790 @@
+开发环境：（1）. Linux  secureCRT
+          (2).  windows, 安装python 2 and 3
+          (3).  windows, eclips编辑器，需要添加python插件，name:PyDev, location: http://pydev.org/updates
+          
+运行机制：.py首先被python解释器转换成自解码文件，这种自解码文件可以被python解释器识别，不能被计算机识别；
+然后python解释器会再次对自解码文件进行转化成可以被计算机识别的二进制文件，放到内存中去执行，再打印出来。
+这种自解码文件有两种：.pyc和.pyo（优化编译的.pyc文件）文件；
+
+变量赋值：赋值，引用  a=1; b=2; a改成2之后，a指向b的地址
+
+python解释器是C语言实现的
+
+基础知识：转义字符
+\  续行
+\' 单引号
+\" 双引号  print "\""  -- > "
+\x 16进制表示字符   print "%x" % 12   --> c
+\o 8进制表示字符    
+\b 退格  
+\n 换行 
+\r 回车  ？？替换   print "aaa\rccc"  --> ccc
+\t 横向制表符  print "aaa\tbbb"
+\v 纵向制表符  
+
+
+算术运算：
+% 取模
+** 幂运算  a=10; a**2=100;
+/ 除法运算，在Python里，整数初整数，只能得出整数，若要得出小数，必须事先规定是浮点数，例如用9.0/10，不要用9/10
+再例如：
+          a=1
+          b=2
+          c=3
+
+          print c*(a/float(b))
+          print c*(float(a)/b)
+
+// 除法,商舍去小数点后面的值  9//10  --》 0.0  9.0//10  -->0 
+
+
+逻辑运算符
+and: a=1;b=2;c=3; a and b and c   -->  返回3，   a=1; b=0; c=2;   a and b and c  --> return 0
+如果操作符都是真，返回最后一个操作数，否则返回false的那一个（从a开始找）；
+or：如果操作数全是false/0， 返回False，否则返回第一个是真的操作数
+not:如果操作数是True，返回False，如果操作数是False，返回True
+
+
+//数据结构-数字
+int  a=10  占24个字节
+long  a=10L   注意这里后面加个L   占28个字节
+float a=10.3  24个字节长
+complex  复数 a=3+4j 32个字节长
+bolean  a=True  24个字节
+
+
+获取占用内存字节长度：
+进入ipython
+In [51]: import sys  //引入sys
+In [52]: sys.getsizeof(10)  //获取整型占用内存空间长度
+Out[52]: 24
+
+In [53]: sys.getsizeof(10L)  //获取长整型长度 
+Out[53]: 28
+
+In[66]: sys.maxint
+Out[66]: 9223372036854775807
+
+In [67]: hex(sys.maxint)
+Out[67]: '0x7fffffffffffffff'
+
+In [68]: sys.float_info
+Out[68]: sys.float_info(max=1.7976931348623157e+308, max_exp=1024, max_10_exp=308, min=2.2250738585072014e-308, min_exp=-1021, min_10_exp=-307, dig=15, mant_dig=53, epsilon=2.220446049250313e-16, radix=2, rounds=1)
+
+In [71]: type(10)  //type函数能够根据数据自行判断数据类型
+Out[71]: int
+
+In [72]: type(10.2)
+Out[72]: float
+
+In [73]: type(10L)
+Out[73]: long
+
+In [74]: type(True)
+Out[74]: bool
+
+In [75]: type(100**10000)  //这里太长了，所以是long
+Out[75]: long
+
+In [76]: type(100**10)
+Out[76]: long
+
+In [77]: type(2**2)  //这里还是int
+Out[77]: int
+
+In [78]: type(3+8j)
+Out[78]: complex
+
+//数据优先级：
+complex > float > long > int
+//如果操作数是complex,那么另一个操作数就会被转换成complex进行操作
+.....其他数据类型也一样
+
+In [79]: a=10
+In [80]: a+10L
+Out[80]: 20L  //自动判断是长整型
+
+
+In [81]: 20L+3.14
+Out[81]: 23.14  // Long转换成float
+
+In [82]: 4.3+4+1j
+Out[82]: (8.3+1j)  //转换成complex
+
+
+//数据类型的强制转换：
+In [83]: a=10
+
+In [84]: type(a)
+Out[84]: int
+
+In [85]: float(a)
+Out[85]: 10.0
+
+In [86]: long(a)
+Out[86]: 10L
+
+In [87]: complex(a)
+Out[87]: (10+0j)
+
+In [88]: complex(a,1)
+Out[88]: (10+1j)
+
+In [89]: int(a)
+Out[89]: 10
+
+In [90]: int(10.1)
+Out[90]: 10
+
+In [91]: long(10.2)
+Out[91]: 10L
+
+位运算//
+
+按位与 &
+按位或 |
+按位左移 <<
+按位右移 >>
+按位取反 ~
+按位异或 ^
+
+例如:
+1>>2  1按位右移2位
+2<<1  2按位左移1位
+~2      2按位取反
+In [12]: 1 >> 2
+Out[12]: 0
+
+In [13]: 2 << 3
+Out[13]: 16
+
+In [14]: ~2
+Out[14]: -3
+ 
+In [15]: 3^6   按位异或
+Out[15]: 5
+
+abs(x)  x的绝对值
+cmp(x,y)  x<y: return -1; x==y: return 0;  x>y: return 1;
+
+max(x,y,z…)  返回最大值
+min(x,y,z..)   返回最小值
+
+In [16]: cmp(1,3)
+Out[16]: -1
+
+In [17]: max(1,2,3,4,5)
+Out[17]: 5
+
+随机数：
+
+In [33]: import random  首先需要引入
+
+In [34]: random.random()   生成0-1之间的浮点数
+Out[34]: 0.546704347358128
+
+In [35]: random.uniform(2,4)  生成指定范围的随机浮点数
+Out[35]: 3.3104525452361813
+
+In [36]: random.randint(3,44)   生成指定范围的随机整数
+Out[36]: 22
+
+
+更多随机函数查询后使用。
+
+
+序列：
+列表：list=[1,2,3]  支持修改
+元组：tuple=(1,2,3) 不能修改
+字符串：str=”123” 不能修改
+Unicode字符串
+
+正索引，负索引
+
+序列的切片操作
+
+In [37]: list=[1,2,3,4,5,6,7,8,9]
+
+In [38]: list
+Out[38]: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+In [39]: list[0]
+Out[39]: 1
+
+In [40]: list[1:6]
+Out[40]: [2, 3, 4, 5, 6]
+
+In [41]: list[0:8:2]
+Out[41]: [1, 3, 5, 7]
+
+In [42]: list[6:1]
+Out[42]: []
+
+In [43]: list[6:1:1]
+Out[43]: []
+
+In [44]: list[6:1:-1]
+Out[44]: [7, 6, 5, 4, 3]
+
+In [45]: list[8::-1]   从第9位开始取，步进值是-1，那就反着取到第一位
+Out[45]: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+In [46]: list[-1]
+Out[46]: 9
+
+In [47]: list[-1::-1]
+Out[47]: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+序列的内建函数：
+In [48]: len([1,2,3])
+Out[48]: 3
+
+In [49]: sum([1,2,3])
+Out[49]: 6
+
+In [55]: max(list)
+Out[55]: 9
+
+In [56]: min(list)
+Out[56]: 1
+
+In [50]: zip("123","456")
+Out[50]: [('1', '4'), ('2', '5'), ('3', '6')]
+
+In [69]: zip("1234")
+Out[69]: [('1',), ('2',), ('3',), ('4',)]
+
+In [70]: zip("123","567890")
+Out[70]: [('1', '5'), ('2', '6'), ('3', '7')]
+
+In [51]: list[-8:-1]
+Out[51]: [2, 3, 4, 5, 6, 7, 8]
+
+In [52]: list[-1:-8:-1]  第三个值是步进值，如果是负数，则往回走
+Out[52]: [9, 8, 7, 6, 5, 4, 3]
+
+In [57]: a=reversed(list)   以一个逆序作为参数，返回一个逆序访问的迭代器
+
+In [58]: a.next()
+Out[58]: 9
+
+In [59]: a.next()
+Out[59]: 8
+
+In [60]: a.next()
+Out[60]: 7
+
+In [61]: a.next()
+Out[61]: 6
+
+In [62]: a.next()
+Out[62]: 5
+
+In [63]: a.next()
+Out[63]: 4
+
+In [64]: a.next()
+Out[64]: 3
+
+In [65]: a.next()
+Out[65]: 2
+
+In [66]: a.next()
+Out[66]: 1
+
+In [67]: a.next()
+---------------------------------------------------------------------------
+StopIteration                             Traceback (most recent call last)
+<ipython-input-67-aa817a57a973> in <module>()
+----> 1 a.next()
+
+StopIteration: 
+
+
+字符串：
+
+In [73]: str1="hello"
+
+In [74]: str1[2]
+Out[74]: 'l'
+
+
+In [78]: str1=str(123456)
+
+In [79]: str1[4]
+Out[79]: '5'
+
+In [80]: str2=([1,2,3,4])
+
+In [81]: str2[1]
+Out[81]: 2
+
+In [82]: str2=((1,2,3,4))  另外几种定义方法
+
+In [83]: str2[1]
+Out[83]: 2
+
+In [84]: str3="0123456789"
+
+In [85]: print str3[1:9:2]
+1357
+
+
+In [88]: str4=[0,1,2,3,4,5,6,7,8,9]
+
+In [89]: stra=str(str4)  强制转换成字符串
+
+In [90]: print stra
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+In [91]: str4
+Out[91]: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+In [92]: strb=tuple(str4)  强制转换成元组
+
+In [93]: strb
+Out[93]: (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+
+数据结构--字符串
+格式化操作符% : 格式化输出
+
+In [2]: print("%c" % 65)  将数值转化为字符
+A
+
+In [3]: print("%d" % 65)  将数值转化为十进制数
+65 
+
+In [17]: print("%d" %65) 三种写法都特么对
+65
+
+In [18]: print("%d" %(65))
+65
+
+
+In [4]: print("%s" % [1,2,3])  将参数转化为字符串,这里打印的是列表
+[1, 2, 3]
+
+In [13]: print("%s" % str((1,2,3)))   打印元组需要先用str()函数强制转换成字符串了再输出
+(1, 2, 3)
+
+In [9]: print("%s" % 100)   将100以字符串输出
+100
+
+In [5]: print("%o" % 65)   将数字转化为8进制
+101
+
+In [6]: print("%x" % 65)  将数字转化为十六进制
+41
+
+In [7]: print("%f" % 65)  将数字转化为浮点数
+65.000000
+
+In [22]: print("%d %%" % 65)  打印一个百分数
+65 %
+
+In [31]: print("%d%%%d" % (100,100))
+100%100
+
+
+原始字符串操作符(r/R)
+所有的字符串都是直接按照字面的意思来使用，没有转义功能或不能打印的字符。
+print(“\n”) 与 print(r”\n”)不同：
+“\n”是一个换行符
+R“\n”是字符\+n，实际值是转义字符\+n组成：”\\n”
+
+In [33]: a="\n"
+
+In [34]: b=r"\n"
+
+In [35]: a
+Out[35]: '\n'
+
+In [36]: b
+Out[36]: '\\n'
+
+In [37]: len(a)
+Out[37]: 1
+
+In [38]: len(b)
+Out[38]: 2
+\
+
+字符串的基本操作：
+
+In [39]: str1="hello"
+
+In [40]: str2="world"
+
+In [41]: str3=str1+str2   字符串相加
+
+In [42]: str3
+Out[42]: 'helloworld'
+
+In [45]: "hello" in str3  判断字符串是否在某个字符串中
+Out[45]: True
+
+In [46]: "hello1" not in str3 判断字符串是否不在某个字符串中
+Out[46]: True
+
+In [47]: "hello1" in str3
+Out[47]: False
+
+
+In [43]: str4="12"
+
+In [44]: str4*3  字符串相加n次
+Out[44]: '121212'
+
+In [48]: cmp(str1,str2)  比较两个字符串大小，先比较长度，再比较每一个元素所对应的ASCII码大小
+Out[48]: -1
+
+In [49]: cmp(str2,str1)
+Out[49]: 1
+
+In [50]: cmp("a","a")  
+Out[50]: 0
+
+In [51]: cmp("a","b")
+Out[51]: -1
+
+In [52]: len(str3)
+Out[52]: 10
+
+In [53]: max(str3)
+Out[53]: 'w'
+
+In [54]: min(str3)
+Out[54]: 'd'
+
+In [55]: chr(65)  接受参数在0-255之间整数，返回相应的字符
+Out[55]: 'A'
+
+In [56]: ord('a')
+Out[56]: 97
+
+In [57]: ord('A')  根据字符返回对应的ASCII
+Out[57]: 65
+
+
+字符串操作：
+In [59]: str3
+Out[59]: 'helloworld'
+
+In [61]: str4=str3.capitalize()
+
+In [62]: str4
+Out[62]: 'Helloworld'
+
+
+str3.  然后按tab，所有关于字符串的方法都会显示出来，对哪个方法不懂的，可以用help()函数看解释
+
+
+In [64]: str3
+Out[64]: 'helloworld'
+
+In [65]: str3.count('o',0,10)  count某个字符在某个范围内出现的次数
+Out[65]: 2
+
+In [66]: str3.count('l',0,10)
+Out[66]: 3
+
+In [67]: str3.count('w',0,10)
+Out[67]: 1
+
+In [68]: str3.count('999',0,10)
+Out[68]: 0
+
+
+In [69]: str3
+Out[69]: 'helloworld'
+
+In [70]: str3.
+str3.capitalize  str3.endswith    str3.isalnum     str3.istitle     str3.lstrip      str3.rjust       str3.splitlines  str3.translate   
+str3.center      str3.expandtabs  str3.isalpha     str3.isupper     str3.partition   str3.rpartition  str3.startswith  str3.upper       
+str3.count       str3.find        str3.isdigit     str3.join        str3.replace     str3.rsplit      str3.strip       str3.zfill       
+str3.decode      str3.format      str3.islower     str3.ljust       str3.rfind       str3.rstrip      str3.swapcase    
+str3.encode      str3.index       str3.isspace     str3.lower       str3.rindex      str3.split       str3.title       
+
+In [70]: str3.find('he',0,10)   在第一位就找到了，返回0
+Out[70]: 0
+
+In [71]: str3.find('e',0,10)
+Out[71]: 1
+
+In [72]: str3.find('ll',0,10)
+Out[72]: 2
+
+In [73]: str3.index('ll',0,10)  能找到的情况下，和find返回一样的
+Out[73]: 2
+
+In [74]: str3.index('jjj',0,10)  index找不到的时候会报错
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-74-2cfc3ecf6925> in <module>()
+----> 1 str3.index('jjj',0,10)
+
+ValueError: substring not found
+
+In [75]: str3.find('jjj',0,10)   find找不到的话会返回-1
+Out[75]: -1
+
+
+In [77]: str3
+Out[77]: 'helloworld'
+
+In [78]: str3.replace('o','O')  默认情况全部替换
+Out[78]: 'hellOwOrld'  
+
+In [79]: str3.replace('o','O',1)  指定替换次数
+Out[79]: 'hellOworld'
+
+字符串unicode：utf8和gbk是unicode的进一步编码
+
+In [1]: u'一'    unicode编码
+Out[1]: u'\u4e00'    unicode编码值
+
+In [2]: a=u'一'
+
+In [3]: a
+Out[3]: u'\u4e00'
+
+In [4]: print a   打印出来还是会显示汉字，终端自动转换
+一
+
+In [5]: b=a.encode("utf8")   utf8编码
+
+In [6]: b
+Out[6]: '\xe4\xb8\x80'   utf8占3个字节
+
+In [7]: print b  打印出来汉字
+一
+
+In [8]: b.decode("utf8")   utf8解码
+Out[8]: u'\u4e00'  解码后还是unicode值
+
+In [12]: c=a.encode('gbk')   对a以gbk进行加密赋值给c
+
+In [13]: c
+Out[13]: '\xd2\xbb'   gbk占两个字节
+
+In [21]: c.decode('gbk')  对c进行gbk解密，可以还原成unicode
+Out[21]: u'\u4e00'
+
+
+数据结构--列表
+列表是序列式的数据类型，他可以通过索引或者切片操作来访问一个或者多个连续的元素；
+列表元素可以改变，字符串不能修改。
+
+定义初始化：
+mylist = [1,2,3,4,5]   最基本的定义方式
+mylist = list(“123456”)  用list()函数定义
+mylist = list((‘1’,’2’,’3’))
+mylist = range(10)     range(start, stop[, step])   本来有三个参数
+
+In [27]: mylist1=[1,2,3,4,5]
+
+In [28]: mylist1
+Out[28]: [1, 2, 3, 4, 5]
+
+In [29]: print mylist1
+[1, 2, 3, 4, 5]
+
+In [30]: mylist2=list("12345")
+
+In [31]: print mylist2
+['1', '2', '3', '4', '5']
+
+In [32]: mylist3=list(('1','2','3'))
+
+In [33]: print mylist3
+['1', '2', '3']
+
+In [34]: mylist4=range(5)
+
+In [35]: print mylist4
+[0, 1, 2, 3, 4]
+
+
+列表访问：
+mylist[1]
+mylist[1:4]
+
+列表更新：
+mylist[1]=10
+mylist=mylist*2   重复
+mylist=myliet+[4,5,6]  连接
+
+
+In [38]: mylist1
+Out[38]: [1, 2, 3, 4, 5]
+
+In [39]: mylist1*2
+Out[39]: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+
+In [40]: mylist1=mylist1*2
+
+In [41]: mylist1
+Out[41]: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+
+In [42]: mylist2
+Out[42]: ['1', '2', '3', '4', '5']
+
+In [43]: mylist2=mylist2+[6,7,8,9,0]
+
+In [44]: mylist2
+Out[44]: ['1', '2', '3', '4', '5', 6, 7, 8, 9, 0]
+
+In [49]: list1=list("helloworld")  用list()函数定义
+
+In [50]: list1
+Out[50]: ['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']
+
+In [51]: list2=list((1,2,3,4,5))  用list函数把元组转换成列表
+
+In [52]: list2
+Out[52]: [1, 2, 3, 4, 5]
+
+In [53]: list3=[1,2,3,4,5]   直接定义
+
+In [54]: list3
+Out[54]: [1, 2, 3, 4, 5]
+
+In [57]: list4=range(2,20,2)    range(start, stop[, step])   三个参数
+
+In [58]: list4
+Out[58]: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+In [59]: list5=range(3,20,3)
+
+In [60]: list5
+Out[60]: [3, 6, 9, 12, 15, 18]
+
+
+列表操作函数：
+in/not in  成员关系
+cmp(seq1,seq2)  比较两个列表，返回1，0，-1
+len(seq)  返回列表元素个数
+sorted(seq) 列表正序
+sum(seq) 列表数字的和
+zip(seq1,..) 根据seq1和其他列表参数生成一个元组列表
+
+In [62]: len(list4)
+Out[62]: 9
+
+In [63]: list4
+Out[63]: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+In [64]: sum(list4)
+Out[64]: 90
+
+In [65]: sorted(list4)
+Out[65]: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+In [66]: list4[0]=100
+
+In [67]: list4
+Out[67]: [100, 4, 6, 8, 10, 12, 14, 16, 18]
+
+In [68]: id(list4)
+Out[68]: 140103325574280
+
+In [69]: sorted(list4)   把列表正序排列
+Out[69]: [4, 6, 8, 10, 12, 14, 16, 18, 100]
+
+In [72]: list3
+Out[72]: [1, 2, 3, 4, 5]
+
+In [76]: list4
+Out[76]: [100, 4, 6, 8, 10, 12, 14, 16, 18]
+
+
+In [73]: cmp(list3,list4)  比较规则：一个个元素进行比较
+Out[73]: -1
+
+In [74]: list3[0]=1000  更改之后就不同了
+
+In [75]: cmp(list3,list4)
+Out[75]: 1
+
+In [79]: list6=[3,2,1,0]  定义list6
+
+In [80]: list6
+Out[80]: [3, 2, 1, 0]
+
+In [81]: sorted(list6)  正序排列，不会改变list6
+Out[81]: [0, 1, 2, 3]
+
+In [82]: list6[3]='0'   将元素0改成字符串‘0’
+
+In [83]: list6
+Out[83]: [3, 2, 1, '0']
+
+In [84]: sum(list6)  累加出错，因为不能对字符串进行加法元素
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-84-dccdccb8b270> in <module>()
+----> 1 sum(list6)
+
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+
+In [87]: list6[3]=True
+
+In [88]: list6
+Out[88]: [3, 2, 1, True]
+
+In [89]: sum(list6)  把True当作1
+Out[89]: 7
+
+
+In [90]: list6[3]=3.5  
+
+In [91]: sum(list6)  如果有元素是浮点型，则自动转换成浮点型
+Out[91]: 9.5
+
+
+
+In [92]: list1=list("helloworld")
+
+In [93]: list1
+Out[93]: ['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']
+
+In [94]: list1.append("!")  在末尾加元素
+
+In [95]: list1
+Out[95]: ['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd', '!']
+
+In [96]: list1.insert(5,'-')  在指定位置加元素
+
+In [97]: list1
+Out[97]: ['h', 'e', 'l', 'l', 'o', '-', 'w', 'o', 'r', 'l', 'd', '!']
+
+In [98]: list1.remove('o')  删除指定元素
+
+In [99]: list1
+Out[99]: ['h', 'e', 'l', 'l', '-', 'w', 'o', 'r', 'l', 'd', '!']
+
+In [100]: list1.pop(0)  弹出指定元素，删除
+Out[100]: 'h'
+
+In [101]: list1
+Out[101]: ['e', 'l', 'l', '-', 'w', 'o', 'r', 'l', 'd', '!']
+
+
+In [103]: list1.sort()  根据ASCII码的值排序
+
+In [104]: list1
+Out[104]: ['!', '-', 'd', 'e', 'l', 'l', 'l', 'o', 'r', 'w']
+
+
+In [105]: list1.count('l')   计算某个元素出现了多少次
+Out[105]: 3
+
+In [107]: list1.extend("add")   添加元素，id不变，和+不同，+会改变id
+
+In [108]: list1
+Out[108]: ['!', '-', 'd', 'e', 'l', 'l', 'l', 'o', 'r', 'w', 'a', 'd', 'd']
+
+In [109]: zip("123","abcd")  生成list
+Out[109]: [('1', 'a'), ('2', 'b'), ('3', 'c')]

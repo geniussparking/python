@@ -1,0 +1,111 @@
+修改haproxy配置文件  只需要写删除 增加 查询，修改暂时不写
+
+需求：
+1、查
+    输入：www.oldboy.org
+    获取当前backend下的所有记录
+
+2、新建
+    输入：
+        arg = {
+            'bakend': 'www.oldboy.org',
+            'record':{
+                'server': '100.1.7.9',
+                'weight': 20,
+                'maxconn': 30
+            }
+        }
+
+3、删除
+    输入：
+        arg = {
+            'bakend': 'www.oldboy.org',
+            'record':{
+                'server': '100.1.7.9',
+                'weight': 20,
+                'maxconn': 30
+            }
+        }
+
+原配置文件
+global       
+        log 127.0.0.1 local2
+        daemon
+        maxconn 256
+        log 127.0.0.1 local2 info
+defaults
+        log global
+        mode http
+        timeout connect 5000ms
+        timeout client 50000ms
+        timeout server 50000ms
+        option  dontlognull
+
+listen stats :8888
+        stats enable
+        stats uri       /admin
+        stats auth      admin:1234
+
+frontend oldboy.org
+        bind 0.0.0.0:80
+        option httplog
+        option httpclose
+        option  forwardfor
+        log global
+        acl www hdr_reg(host) -i www.oldboy.org
+        use_backend www.oldboy.org if www
+
+backend www.oldboy.org
+        server 100.1.7.9 100.1.7.9 weight 20 maxconn 3000
+
+代码部分：
+print("1. Search \n2. Add \n3. Delete")
+choose = input("Please choose:")
+if choose == "1":
+   search = input("search:")
+   search = "backend " + search   # 只需要输入网址，后面做完全匹配
+   with open("haproxy","r",encoding="utf-8") as f:
+       for line in f:   # 迭代器中循环
+           if search == line.strip():
+               print(line.strip())
+               print(f.readline().strip())   # 读取符合搜索条件的下一行,即配置信息，完成搜索功能
+
+elif choose == "2":
+   add_server = eval(input("Please add new server config:"))   # 这里在输入配置的时候，不能换行，所以弄成一行. eval()函数将字符串转换成字典数据类型。{'backend':'www.oldboy.org','record':{'server':'100.1.7.9','weight':20,'maxconn':30}}
+   #print(add_server)
+   with open("haproxy","a",encoding="utf-8") as f:
+       f.write("backend {backend}\n".format(backend = add_server['backend']))
+       f.write("       server {server} {server} weight {weight} maxconn {maxconn}\n".format(server = add_server['record']['server'],weight = add_server['record']['weight'],maxconn = add_server['record']['maxconn']))
+   print("Add, ok.")
+
+elif choose == "3":
+   #print("delete")
+   delete_server = eval(input("Please delete server config:"))   # 输入：{'backend':'www.oldboy.org','record':{'server':'100.1.7.9','weight':20,'maxconn':30}}
+   backend_delete = delete_server['backend']    # 逐个取出需要匹配的元素
+   server_delete = delete_server['record']['server']
+   weight_delete = delete_server['record']['weight']
+   maxconn_delete = delete_server['record']['maxconn']
+   with open("haproxy","r",encoding="utf-8") as f:
+       haproxy_lines = f.readlines()                # 将配置文件直接全部读入到列表，因为配置文件比较小，就这样干了
+   backend_delete_backend = "backend "+backend_delete  # 拼接后是这样的：backend www.oldboy.org
+   delete_index = list()  # 定义一个空列表，用来装即将要删除的元素下标
+   for index,line in enumerate(haproxy_lines):
+       if backend_delete_backend == line.strip():    # 先用backend www.oldboy.org来查找，后面再进行配置文件的完全匹配
+           delete_record = haproxy_lines[index+1].strip().split(" ")    #  server 100.1.7.9 100.1.7.9 weight 20 maxconn 3000  转化成了列表
+           #print(delete_record)  ['server', '100.1.7.9', '100.1.7.9', 'weight', '20', 'maxconn', '3000']
+           if delete_record[1] == server_delete and int(delete_record[4]) == weight_delete and int(delete_record[6]) == maxconn_delete:   # 进行配置文件的完全匹配，符合条件的行索引加入delete_index列表
+               #print(index,line)
+               delete_index.append(index)
+               delete_index.append(index+1)
+   #print(delete_index)    # 得到待删除行索引的列表[29, 30, 39, 40, 41, 42]
+   count = 0
+   with open('haproxy','w',encoding='utf-8') as f:   # 重写配置文件，需要删除的不写入文件
+       for line in haproxy_lines:
+           if count not in delete_index:
+               #print(count, line)
+               f.write(line)
+           count += 1
+   print("Delete, OK.")
+else:
+   print("Wrong choice.")
+   exit()

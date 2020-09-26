@@ -1,0 +1,172 @@
+查看某个类的所有成员 dir()
+成员：包含字段 属性 方法
+方法：静态 动态 类方法
+字段：静态字段和普通字段
+属性：普通属性
+name = 'laoda'
+print(name)
+result = name.__contains__('da')
+print(result)
+输出：
+laoda
+True
+这里的__contains__就相当于：
+'da' in name
+例如：
+name = 'laoda'
+print(name)
+result = 'da' in name
+print(result)
+输出结果一样的：
+laoda
+True
+
+字符串拼接：使用字符串格式化
+name = 'laoda'
+age = 28
+sex = '男'
+result = "我的名字是：%s，我今年%d岁，我是%s生" %(name,age,sex)
+print(result)
+输出：
+我的名字是：laoda，我今年28岁，我是男生
+
+首字母大写：
+name = 'laoda'
+result = name.capitalize()
+print(result)
+
+需要打印下面这样的：
+************laoda*************
+使用center方法：
+name = 'laoda'
+result = name.center(30, '*')   #center()的第一个参数表示需要打印的内容是多长，第二个参数表示空白地方需要填充什么内容
+print(result)
+
+计算某个子序列出现的次数：count()
+name = 'laoda'
+result = name.count('lao') #count()里面的第二和第三个参数用来放起始和终止的位置
+print(result)
+输出：
+1
+
+转换字符编码：
+name = '发哥'
+result = name.encode('gbk')
+print(result)
+输出：
+b'\xb7\xa2\xb8\xe7'
+python2里需要先转unicode，再转gbk
+python3就是直接转换的，不用再走unicode的步骤了,内部自动走了这个过程
+
+判断是以什么字符结尾的：
+name = 'dfdfds'
+result = name.endswith('ds') #可以用来判断汉字 可以加第二和第三个参数，用来规定起点和终点
+print(result)
+输出：
+True
+
+expandtabs()将tab换成空格，默认是8个字符长度
+>>> a = 'a\tbc'
+>>> result = a.expandtabs()
+>>> print(result)
+a       bc
+>>> len(result)
+10
+
+find()和index()
+>>> a.find('a')   #直接找a,找到后返回索引值
+0
+>>> a.find('b',0,1)  #找不到返回-1，后面两个参数是查找范围
+-1
+>>> a.find('b',0,3)  
+2
+
+index()方法：
+>>> a.index('b')  #找到了就返回索引值
+2
+>>> a.index('y')    #使用index()找不到的话会直接报错
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: substring not found
+
+fomat() #先占位，再拼接
+>>> name = 'alex'
+>>> name = 'alex {0}'
+>>> name.format('dashen')
+'alex dashen'
+#还可以多个：跟%差不多
+>>> name = "alex {0} as {1}"
+>>> print(name.format('dashen','ok'))
+alex dashen as ok
+
+#写成动态参数
+>>> name = "alex {nickname} as {id}"
+>>> print(name.format(nickname="dashen",id="123456"))
+alex dashen as 123456
+
+还有可以判断是否是字母或数字isalnum，是否是字母isalpha，是否是数字isdecimal，是否全部小写islower,是否首字母大写istitle,是否全大写isupper
+
+join()拼接：
+li = ['a','l','e','x']
+result="".join(li)
+print(result)
+result_1="_".join(li)
+print(result_1)
+输出：
+alex
+a_l_e_x
+
+
+
+ljust
+rjust
+lower
+lstrip
+rstrip
+还有字符对应替换：maketrans和translate搭配使用，看wupeiqi老师博客
+
+partition()做分割
+name = 'alexisdashen'
+print(name.partition('is'))
+打印出：('alex', 'is', 'dashen')
+
+replace()替换
+name = 'alexisdashen'
+print(name.replace('a','p'))
+print(name.replace('a','p',1)) #只替换一次
+plexisdpshen
+plexisdashen
+
+split()分割
+name = """
+aa
+bb
+cc
+dd
+
+"""
+result = name.split('a')
+print(result)
+输出：['\n', '', '\nbb\ncc\ndd\n\n']
+
+splitlines()
+name = """
+aa
+bb
+cc
+dd
+
+"""
+result = name.splitlines()  #相当于split('\n')
+print(result)
+输出：['', 'aa', 'bb', 'cc', 'dd', '']
+
+startswith()以什么开头
+endswith()以什么结束
+swapcase()大小写转换，将字符串里面所有大写改成小写，小写改成大写
+title()首字母大写
+
+
+
+
+

@@ -1,0 +1,61 @@
+安装python 3
+参考：http://moelove.info/2017/06/30/Install-Python3-6-on-CentOS7/
+yum install wget gcc make
+➜  # wget 用于下载源码包
+➜  # gcc 和 make 用于编译
+
+下载python3.6.3
+wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
+
+解包，解压缩
+➜  xz -d Python-3.6.1.tar.xz
+➜  tar -xvf Python-3.6.1.tar
+cd Python-3.6.3
+配置：
+./configure --prefix=/usr/local/python3.6 --enable-optimizations
+安装依赖包：解决make install出现错误问题
+yum install zlib-devel
+解决上下左右键乱码问题：
+yum install readline-devel
+# 解决 import bz2 报错
+➜  yum install  bzip2-devel
+➜  # 解决 import curses 报错
+➜  yum install  ncurses-devel
+➜  # 解决 import sqlite3 报错
+➜  yum install sqlite-devel
+➜  # 解决 _dbm _gdbm 缺失提醒
+➜  yum install gdbm-devel
+➜  # 解决 _lzma 缺失提醒
+➜  yum install xz-devel
+➜  # 解决 _tkinter 缺失提醒
+➜  yum install tk-devel
+编译：
+make
+make install
+添加环境变量：
+ln -s /usr/local/python3.6/bin/python3 /usr/bin/python3
+
+上面的代码合并起来：
+yum install wget gcc make
+wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
+xz -d Python-3.6.1.tar.xz
+tar -xvf Python-3.6.1.tar
+cd Python-3.6.3
+./configure --prefix=/usr/local/python3.6 --enable-optimizations
+yum install zlib-devel
+yum install readline-devel
+yum install  bzip2-devel
+yum install  ncurses-devel
+yum install sqlite-devel
+yum install gdbm-devel
+yum install xz-devel
+yum install tk-devel
+make
+make install
+ln -s /usr/local/python3.6/bin/python3 /usr/bin/python3
+输入python3，检查上下左右键有没有问题,看能不能正常使用
+
+2. Linux的文件给可执行权限的方式：chmod +x hello.py, 然后使用./hello.py即可执行
+3. 在终端直接执行python的方式：python hello.py 添加过执行权限的文件可以./hello.py直接执行，如果出现语法错误，则需要在py文件首行加上用什么程序来执行，py需要加上: #! /usr/bin/env python
+4. vim下，yy复制，p粘贴
+

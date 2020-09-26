@@ -1,0 +1,125 @@
+参考资料：http://www.cnblogs.com/wupeiqi/articles/5133343.html
+浅拷贝：只拷贝一层
+深拷贝：全部拷贝
+copy()方法 其实是调用的copy模块里面的copy方法
+#!/usr/bin/env python
+import copy
+#浅拷贝
+#copy.copy()
+#深拷贝
+#copy.deepcopy()
+a1 = 'aaa'
+a2 = 'aaa'
+print(id(a1))
+print(id(a2))    #不管是同时赋一样的值还是直接a2=a1, 这里a1和a2所指向的id都是一样的
+b1 = copy.copy(a1)
+print(id(b1))
+b2 = copy.deepcopy(a1)
+print(id(b2))    # 不管深拷贝浅拷贝，id也是一样的
+# 结论： 对于数值和字符串，无论通过赋值、深浅拷贝，他们永远都是用的同一个内存地址
+
+其他列表，元组，字典等呢？
+看博客 http://www.cnblogs.com/wupeiqi/articles/5133343.html
+
+
+#!/usr/bin/env python
+import copy
+n1 = {"k1": "wu", "k2": 123, "k3": ["alex", 456]}   #首先需要理解的是，字典里面的键和值都是分散存储在内存里面的，都会占用内存空间，字典这个结构也会占用内存
+n2 = n1
+print(id(n1),id(n2))   #赋值：两个字典的id一样的
+n3 = copy.copy(n1)
+print(id(n1),id(n3))   #浅拷贝，两个字典的id是不同的，说明在内存里面，一样的字典又出现了一份，仅仅是第一层不同，从第二层开始还是一样的
+id_list1 = id(n1['k3'])
+id_list2 = id(n2['k3'])
+print(id_list1,id_list2)    #对于浅拷贝，深层元素的id还是一样的
+
+print("来看看深拷贝：")
+s1 = copy.deepcopy(n1)
+print(id(s1),id(n1))          #字典的id是不同的
+id_n1 = id(n1['k3'])
+id_s1 = id(s1['k3'])
+print(id_n1,id_s1)              #深层元素的id也是不同的
+#注意：所有最小的单元，即字符串，数字所占用的id永远都是一样的，这里深浅拷贝只是针对除了数字，字符串外的数据结构
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+2938887953432 2938887953432
+2938887953432 2938887953504
+2938890809672 2938890809672
+来看看深拷贝：
+2938889387464 2938887953432
+2938890809672 2938890809864
+
+Process finished with exit code 0
+
+深浅拷贝的应用：
+#!/usr/bin/env python
+import copy
+dic = {
+    'cpu':[80,],
+    'mem':[80,],
+    'disk':[80,]
+}
+print(dic)
+# 假如上面的字典是一个监控服务器的模板，用在5000台机器上，现在有另外5000台机器，需要把cpu的监控指标降低成50，需要另外一套模板，那就需要从已有的模板直接复制就好了
+# 如果是用浅拷贝，会发生什么：
+dic_new1 = copy.copy(dic)
+print("改变新模板cpu的值之前,新模板：")
+print(dic_new1)
+dic_new1['cpu'][0] = 50       #这里赋值不能搞错，是改变最小单元的数字，不是列表
+print("改变新模板cpu的值之后：")
+print('新模板：',dic_new1)
+print('旧模板：',dic)
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+{'cpu': [80], 'mem': [80], 'disk': [80]}
+改变新模板cpu的值之前,新模板：
+{'cpu': [80], 'mem': [80], 'disk': [80]}
+改变新模板cpu的值之后：
+新模板： {'cpu': [50], 'mem': [80], 'disk': [80]}     #注意这里新旧模板一起改了,因为浅拷贝没有重新创建一份新的列表，仅仅创建了一份新的字典，字典里面的列表的id没有改变
+旧模板： {'cpu': [50], 'mem': [80], 'disk': [80]}
+
+Process finished with exit code 0
+
+# print('深拷贝：')
+# dic_new2 = copy.deepcopy(dic)
+# print("深拷贝下，改变新模板cpu的值之前,新模板：")
+# print(dic_new2)
+# dic_new2['cpu'][0] = 50
+# print("改变新模板cpu的值之后：")
+# print('新模板：',dic_new2)
+# print('旧模板：',dic)
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+{'cpu': [80], 'mem': [80], 'disk': [80]}
+深拷贝：
+深拷贝下，改变新模板cpu的值之前,新模板：
+{'cpu': [80], 'mem': [80], 'disk': [80]}
+改变新模板cpu的值之后：
+新模板： {'cpu': [50], 'mem': [80], 'disk': [80]}
+旧模板： {'cpu': [80], 'mem': [80], 'disk': [80]}
+
+Process finished with exit code 0
+
+
+import copy
+person = ['name',['saving',100]]
+p1 = copy.copy(person)   # 复制列表有3中方式
+#p2 = person[:]   # 完全切片
+#p3 = list(person)
+
+p1 = person[:]
+p2 = person[:]   # 复制列表，现在元素一样
+
+p1[0] = "alex"
+p2[0] = "fengjie"   # 把两个复制的列表改元素
+
+print(p1)   # ['alex', ['saving', 100]]
+print(p2)   # ['fengjie', ['saving', 100]]
+
+p1[1][1] = "50"    # 浅拷贝 改列表里面的列表
+
+print(p1)   # ['alex', ['saving', '50']]
+print(p2)   # ['fengjie', ['saving', '50']]     浅拷贝 这种用处在于多人使用共同账户
+

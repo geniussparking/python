@@ -1,0 +1,156 @@
+Python的文件操作
+http://www.cnblogs.com/wupeiqi/articles/4943406.html
+http://www.cnblogs.com/wupeiqi/articles/5133343.html
+文件操作有如下方法：
+>>> dir(f)
+['_CHUNK_SIZE', '__class__', '__del__', '__delattr__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', 
+'__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', 
+'__le__', '__lt__', '__ne__', '__new__', '__next__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', 
+'__str__', '__subclasshook__', '_checkClosed', '_checkReadable', '_checkSeekable', '_checkWritable', '_finalizing', 'buffer',
+'close', 'closed', 'detach', 'encoding', 'errors', 'fileno', 'flush', 'isatty', 'line_buffering', 'mode', 'name', 'newlines',
+'read', 'readable', 'readline', 'readlines', 'seek', 'seekable', 'tell', 'truncate', 'writable', 'write', 'writelines']
+
+文件句柄 = open('文件路径', '模式')
+打开文件时，需要指定文件路径和以何等方式打开文件，打开后，即可获取该文件句柄，日后通过此文件句柄对该文件操作。
+
+打开文件的模式有：
+
+r，只读模式（默认）。
+w，只写模式。【不可读；不存在则创建；存在则删除内容；】
+a，追加模式。【可读；   不存在则创建；存在则只追加内容；】
+"+" 表示可以同时读写某个文件
+
+r+，可读写文件。【可读；可写；可追加】
+w+，写读
+a+，同a
+"U"表示在读取时，可以将 \r \n \r\n自动转换成 \n （与 r 或 r+ 模式同使用）
+
+rU
+r+U
+"b"表示处理二进制文件（如：FTP发送上传ISO镜像文件，linux可忽略，windows处理二进制文件时需标注）
+
+rb
+wb
+ab
+
+
+写入操作：
+# -*- coding:utf-8 -*-
+f = open('test.txt', 'w')   #Python3只能用open，file是python2用的，这里是打开或创建一个文件，
+#这里'w'是写入文件，注意用write写入会覆盖掉同文件名的文件，注意一定要在write前备份文件
+f.write("this is the 1 line\n")   
+f.write("this is the 2 line\n")
+f.close    #这里应该是叫关掉文件句柄？
+
+读取操作：
+
+读取全部：
+f = open('test.txt', 'r')
+print(f.read())   #read()里面可以传入参数，读几个字符，例如读两个字符read(2)
+f.close()
+
+只读一行：
+f = open('test.txt', 'r')
+print(f.readline())
+f.close()
+
+读取全部，以列表形式输出：
+f = open('test.txt', 'r')
+print(f.readlines())
+f.close()
+
+循环打印：
+f = open('test.txt', 'r')
+for line in f:
+    print(line)    #注意这里打印出来会有空行，因为原文件里面有\n，实际应用中要想法先将空行移除。
+f.close()
+
+所以，循环打印无空行：
+f = open('test.txt', 'r')   #读取'r'
+for line in f:
+    print(line.strip())    #所以，strip()方法不仅仅只是去掉首尾空格那么简单吧！！
+f.close()
+
+对打印出来的结果做一些if判断：
+f = open('test.txt', 'r')
+for line in f:
+    if "4" in line:
+        print("这里是第四行！！！")
+    else:
+        print(line.strip())
+f.close()
+
+结果输出：
+this is the 1 line
+this is the 2 line
+this is the 3 line
+这里是第四行！！！
+this is the 5 line
+
+
+追加模式：
+f = open('test.txt', 'a')  #write还是write，只是这里的参数是'a'
+f.write("6\n")
+f.write("7\n")
+f.close()
+
+读写模式：'w+' 这种模式很危险，因为会先覆盖掉同文件名的文件
+
+以上说的都对，但是读写汉字要这样来：
+#!/usr/bin/env python
+#!-*- coding:utf-8 -*-  #这里的字符编码不能丢,不然在下面open()里面要放入第三个参数：,encoding='utf-8', 这里的编码问题还没有搞清楚
+fw = open('test.txt', 'w',encoding='utf-8')   #这里到底要不要加上编码？
+fw.write('aaa输入汉字试试吧111。')
+fw.close()
+fr = open('test.txt','r',encoding='utf-8')
+fr.seek(1)          # 指定当前指针  字节
+print(fr.read(3)) # 默认不加参数是读取全部，加参数表示读多少个字符，不是字节
+print(fr.tell())     # 获取当前指针的位置  字节
+fr.close()
+
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+aa输
+6
+
+Process finished with exit code 0
+
+#!/usr/bin/env python
+#!-*- coding:utf-8 -*-
+fw = open('test.txt', 'r+',encoding='utf-8')  # 注意这里是可读可写
+fw.write('aaa输入汉字试试吧111。')
+#fr = open('test.txt','r',encoding='utf-8')    #上面的模式r+ 所以不用再打开文件
+fw.seek(1)          # 指定当前指针  字节
+print(fw.read(3)) # 默认不加参数是读取全部，加参数表示读多少个字符，不是字节
+print(fw.tell())     # 获取当前指针的位置  字节
+fw.seek(0)
+print(fw.tell())
+fw.seek(6)
+print(fw.read())   #read是读取当前指针后面的字节，注意，在有汉字的情况下，utf-8编码一个汉字是3个字节，如果上面是seek(5)，则会报错，因为"aaa输"占6个字节
+print(fw.tell())   #这里打印的是30，说明read读完后，指针指向最后去了
+fw.close()
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+aa输
+6
+0
+入汉字试试吧111。
+30
+
+Process finished with exit code 0
+
+truncate()函数
+#!/usr/bin/env python
+#!-*- coding:utf-8 -*-
+fw = open('test.txt', 'r+',encoding='utf-8')  # 注意这里是可读可写
+fw.write('aaa输入汉字试试吧111。')
+fw.seek(6)          # 指定当前指针  字节
+fw.truncate()       #直接改变打开的文件，这里的结果是：aaa输，truncate的功能是把当前指针前面的内容剪切出来，然后扔回打开的文件，原来的内容全部被清空
+fw.close()
+
+
+
+
+
+
+

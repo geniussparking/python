@@ -1,0 +1,90 @@
+参考资料：http://www.cnblogs.com/wupeiqi/articles/4980620.html
+
+#!/usr/bin/env python
+# 源代码这里开始
+def f1(name):
+    print("thi is f1,welcome %s" %name)
+def f2(name):
+    print("thi is f2,welcome %s" %name)
+def f3(name):
+    print("thi is f3,welcome %s" %name)
+# 其他同事调用的时候只需要 f1() f2() f3()
+# 以上是源代码，因源代码没有验证模块，这样不安全不规范，现在需要用户在调用上面的函数之前，加上验证功能，不能改变上面源代码
+
+# 加的验证模块代码如下：
+def login(func):
+    print("通过验证")
+    return func     # 返回函数的内存ID
+f1 = login(f1)      # 这里login()返回的值就是f1这个函数的ID，这样能实现功能，但是f1()传进去的还是之前的name,验证模块的代码应该怎么写？通过名字验证？
+f1('a')
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+通过验证
+thi is f1,welcome a
+
+Process finished with exit code 0
+
+
+使用装饰器的写法：装饰器就相当于一个语法塘，就是整合了很多功能的功能
+
+#!/usr/bin/env python
+
+# 加的验证模块代码如下：通过装饰器的方法实现，但是这个login函数需要写在脚本的前面，还有这样不是更复杂了？
+def login(func):         # 这里直接传的函数体
+    # print(func)        # 这里会打印出三个f 的内存地址, 说明func 代表 f1 2 3
+    def inner(arg):             # 写成双层是因为如果写一层的话，脚本只要一执行，下面所有使用装饰器的地方都会打印“通过验证”，这样会打印出N个“通过验证”
+        # print(arg)      # 这里打印出 name
+        print("验证模块代码--通过验证")
+        func(arg)       #  这里的func(arg) 相当于 f1('name')
+    return inner        # 观察login()这个函数的执行过程，中间的inner()先不看，调用func函数体后直接返回了inner，相当于下面的f1 = inner,
+                        # 这样，在没有调用f1(name)的时候，就没有参数name，这样函数就不会执行，当调用f1(name)的时候，就相当于innner(name),这样就会触发验证模块
+
+# 源代码这里开始
+@login                      # 相当于  f1 = login(f1)
+def f1(name):
+    print("thi is f1,welcome %s" %name)
+@login
+def f2(name):
+    print("thi is f2,welcome %s" %name)
+@login
+def f3(name):
+    print("thi is f3,welcome %s" %name)
+
+f1('name')          # 还是这样调用
+
+# 装饰器以后慢慢研究，感觉有点乱，有点复杂，应该不至于这么复杂
+
+
+传多个参数，比如名字和密码的，需要使用动态参数；
+
+#!/usr/bin/env python
+
+# 加的验证模块代码如下：通过装饰器的方法实现，但是这个login函数需要写在脚本的前面，还有这样不是更复杂了？
+def login(func):        # 这里的参数是函数体
+    #print(func)        # 这里会打印出三个f 的内存地址, 说明func 代表 f1 2 3，函数体
+    def inner(*args, **kwargs):             # 写成双层是因为如果写一层的话，脚本只要一执行，下面所有使用装饰器的地方都会打印“通过验证”，这样会打印出N个“通过验证”
+        # print(arg)      # 这里打印出 name
+        print("通过验证")
+        func(*args, **kwargs)       #  这里的func(arg) 相当于 f1('name')
+    return inner
+
+# 源代码这里开始
+@login                      # 相当于  f1 = login(f1), 这就是为什么上面的装饰器需要写两层，因为这里相当于直接调用了，f1 = login(f1)这里是会执行的
+def f1(name, passwd):
+    print("thi is f1,welcome %s" %name)
+@login
+def f2(name, passwd):
+    print("thi is f2,welcome %s" %name)
+@login
+def f3(name, passwd):
+    print("thi is f3,welcome %s" %name)
+
+f1('name','123')          # 还是这样调用
+f2('name','123')
+f3('name','123')
+
+
+第76节 带参数的复杂装饰器的实现没有搞清楚
+
+

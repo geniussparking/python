@@ -1,0 +1,50 @@
+使用Urllib库爬取网页
+import urllib.request
+file = urllib.request.urlopen("http://www.baidu.com")
+a = file.read()   # 这里会读取全部html页面内容，赋给一个字符串变量
+a = file.readline() # 读取一行内容
+a = file.readlines()  # 读取全部内容，将内容赋值给一个列表变量，注意这是和read()不同的地方
+
+爬取一个网页的基本思路如下:
+import urllib.request     # 引入需要引入的模块
+import urllib.error
+try:
+    file = urllib.request.urlopen("http://www.baidu.com")   # 需要爬取的网页
+    data = file.read()      # 读取
+    fhandle = open("1.html", 'wb')  # 打开一个文件句柄，准备保存到本地，使用wb方式写入
+    a = fhandle.write(data)       # 保存到本地
+    print(a)
+    fhandle.close()         # 关闭文件句柄  
+except urllib.error.URLError as e:        # 如果抓取出错，则抛出错误码和错误原因
+    if hasattr(e,"code"):
+        print(e.code)
+    if hasattr(e,"reason"):
+        print(e.reason)
+
+
+完整的比较有用户体验的代码：
+import urllib.request
+import urllib.error
+try:
+    file = urllib.request.urlopen("http://www.baidu.com/")
+    print("网页状态码：%s，开始读取页面：" %file.getcode())
+    data = file.read()
+    fhandle = open("1.html", 'wb')
+    a = fhandle.write(data)
+    if a > 0:
+        print("页面抓取成功，抓取字节数："+ str(a))
+    else:
+        print("页面抓取失败，请检查目标网站是否支持抓取。")
+    fhandle.close()
+except urllib.error.URLError as e:
+    print("打开网站出错：")
+    if hasattr(e,"code"):
+        print("错误状态码：%s" %e.code)
+    if hasattr(e,"reason"):
+        print("出错原因:%s" %e.reason)
+
+
+
+
+
+

@@ -1,0 +1,351 @@
+Set是一个无序且不重复的元素集合；
+  List可以重复，且有序
+  Tuple可以重复，但无序
+Set是不重复的，所以适合做爬虫存储数据的数据库，不用自己去判断有没有重复的元素
+set自己维护了一套key，相当于是数据库索引，访问的速度也非常快，省去很多判断重复的步骤
+set的优势：
+set访问速度快，原生解决了重复问题
+创建set对象：
+s1 = set()
+
+#!/usr/bin/env python
+s1 = set()
+s1.add('alex')                                  #add方法
+print(s1)
+s1.add('eric')
+print(s1)
+s2 = set(['alex','eric','aaa','bbb','aaa'])  #重复的元素自动过滤掉，但是是无序的，每次打印的顺序都是随机的
+print(s2)                                        #就算放进去的是列表，也会转换成一个个元素，以set的形式存储
+s3 = set(('a','b','c','d'))                    #元组也可以被转化
+print(s3)
+s4 = set({'k1':'v1','k2':'v2','k3':'v3'})    #放字典进去只会将键转换成set的元素，v1 v2 v3无法打印出来
+print(s4)
+s5 = set({'v1','v2','v3'})                      #放set进去也可以，总之，set的用法也很灵活
+print(s5)
+s6 = s5.copy()                                    #copy方法
+print(s6)
+s7 = s5.difference(['v1','v2'])                 #difference()方法，取差集，生成一个新的set(),将v1 v2去掉，打印出剩下的元素，不改变原来的set
+print(s7)
+s8 = s5.difference_update(['v2','v3'])          #difference_update()接收的参数是接收什么就删除什么，直接改变原来的set，不会生成新的set
+print(s5)                                        #之前s5 = {'v2', 'v1', 'v3'},执行完difference_update()后直接把s5变成了{'v1'}
+print(s8)                                        #s8输出的是None，说明没有生成新的set,这个又和difference()不同
+
+#!/usr/bin/env python
+s2 = set(['alex','eric','aaa','bbb','aaa'])  
+print(s2)                                     # {'eric', 'bbb', 'alex', 'aaa'}
+s3 = s2.intersection(['aaa'])                   #取交集，生成一个新set
+print(s3)                                     # {'aaa'}
+s2.intersection_update(['bbb'])                 #取交集，更新原来的set
+print(s2)                                     # {'bbb'}，这里相当于是取了交集（difference_update()是取差集），然后更新原来的set,两部操作
+
+isdisjoint()    #如果没有交集，则返回True
+issubset()      #是否是子集
+issuperset()    #是否是父集
+pop()           #从一个集合中拿出一个元素据为己有，pop()中不能放参数，且因为set是无序的，所以取出的值也是随机的，但是总是取出第一个
+remove()        #需要放参数，指定删除哪一个，直接改变原来的集合，无返回值
+
+#!/usr/bin/env python
+s2 = set(['alex','eric','aaa','bbb','aaa'])  #重复的元素自动过滤掉，但是是无序的，每次打印的顺序都是随机的
+print(s2)                                        #就算放进去的是列表，也会转换成一个个元素，以set的形式存储
+s3 = s2.symmetric_difference(['alex','aaa','ccc'])          #取对称差，将共同的元素去掉，这里输出{'ccc', 'eric', 'bbb'}
+print(s3)
+s2.symmetric_difference_update(['alex'])        #取对称差，改变原来的集合,输出：{'eric', 'aaa', 'bbb'}
+print(s2)
+
+几个简单的常用操作
+http://www.cnblogs.com/alex3714/articles/5717620.html 4.集合操作 部分
+s = set([3,5,9,10])      #创建一个数值集合  
+t = set("Hello")         #创建一个唯一字符的集合  
+print( t | s )          # t 和 s的并集   {3, 5, 'l', 9, 10, 'o', 'e', 'H'}
+print( t & s )         # t 和 s的交集    打印出：set()，无交集
+print( t - s )          # 求差集（项在t中，但不在s中）   {'H', 'l', 'o', 'e'}
+print( t ^ s )         # 对称差集（项在t或s中，但不会同时出现在二者中）   {3, 5, 'l', 9, 10, 'o', 'e', 'H'}
+注意：集合是没有插入操作的，只有添加
+基本操作：  
+t.add('x')            # 添加一项  
+s.update([10,37,42])  # 在s中添加多项  
+
+使用remove()可以删除一项：  
+t.remove('H')   # 注意 不可能有两个H的，因为是去重的
+len(s)  
+set 的长度  
+x in s  
+测试 x 是否是 s 的成员  
+x not in s  
+测试 x 是否不是 s 的成员  
+s.issubset(t)  
+s <= t  
+测试是否 s 中的每一个元素都在 t 中  
+s.issuperset(t)  
+s >= t  
+测试是否 t 中的每一个元素都在 s 中  
+s.union(t)  
+s | t  
+返回一个新的 set 包含 s 和 t 中的每一个元素  
+s.intersection(t)  
+s & t  
+返回一个新的 set 包含 s 和 t 中的公共元素  
+s.difference(t)  
+s - t  
+返回一个新的 set 包含 s 中有但是 t 中没有的元素  
+s.symmetric_difference(t)  
+s ^ t  
+返回一个新的 set 包含 s 和 t 中不重复的元素  
+s.copy()  
+返回 set “s”的一个浅复制  
+复制代码
+
+s.pop("H")  # 如果不指定元素，会是随机弹出，返回弹出的元素
+s = set([3,5,9,10]) 
+a = s.discard(3)    # 注意，如果指定要删除的元素不存在，discard不会报错；且这里的a保存的是None
+print(s)
+打印出：{9, 10, 5}
+
+关于字典的小项目（初次尝试，没有用到set的知识，待更新）：
+#!/usr/bin/env python
+#思路：
+# 1. 原来没有 新的有--> 新加入
+# 2. 原来有 新的也有--> 更新
+# 3. 原来有 新的没有--> 删除原来
+
+#要求，得到3个列表，用set的知识来做：
+#要更新的数据
+#要删除的数据
+#要添加的数据
+
+# 数据库中原有
+c1 = '0.0.0.0'
+c2 = '1.1.1.1'
+old_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#2": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#3": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#5": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80}
+}
+
+# cmdb 新汇报的数据
+new_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 800},
+    "#3": {'hostname': c1, 'cpu_count': 20, 'mem_capicity': 80},
+    "#4": {'hostname': c2, 'cpu_count': 2, 'mem_capicity': 80},
+    "#6": {'hostname': c2, 'cpu_count': 26, 'mem_capicity': 800}
+}
+del_list = []
+del_data = {}
+update_list = []
+update_data = {}
+insert_list = []
+insert_data = {}
+#先从旧表里面删除新表里面已经没有的数据
+for k in old_dict.keys():    
+    if k not in new_dict.keys():
+        del_list.append(k)
+for d in del_list:
+    del_data.update({d:old_dict[d]})
+print("删除的数据：")
+print(del_data)
+for d in del_data.keys():
+    old_dict.pop(d)
+#删除完毕
+#更新新旧两张表里面都有的数据
+for k in old_dict.keys():
+    if k in new_dict.keys():
+        update_list.append(k)
+for u in update_list:
+    update_data.update({u:old_dict[u]})
+print("更新的数据：")
+print( update_data)
+for u in update_list:
+    old_dict.update({u:new_dict[u]})
+#更新完毕
+#插入新表里面有，旧表没有的
+for i in new_dict.keys():
+    if i not in old_dict.keys():
+        insert_list.append(i)
+for i in insert_list:
+    insert_data.update({i:new_dict[i]})
+print("需要插入的新数据：")
+print(insert_data)
+for i in insert_data.keys():
+    old_dict.update({i:new_dict[i]})
+#更新完毕
+print("更新数据后的旧表：")
+print(old_dict)
+print("更新数据后的新表：")
+print(new_dict)
+
+删除的数据：
+{'#2': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 80}, '#5': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 80}}
+更新的数据：
+{'#1': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 80}, '#3': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 80}}
+需要插入的新数据：
+{'#4': {'hostname': '1.1.1.1', 'cpu_count': 2, 'mem_capicity': 80}, '#6': {'hostname': '1.1.1.1', 'cpu_count': 26, 'mem_capicity': 800}}
+更新数据后的旧表：
+{'#1': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 800}, '#3': {'hostname': '0.0.0.0', 'cpu_count': 20, 'mem_capicity': 80}, '#4': {'hostname': '1.1.1.1', 'cpu_count': 2, 'mem_capicity': 80}, '#6': {'hostname': '1.1.1.1', 'cpu_count': 26, 'mem_capicity': 800}}
+更新数据后的新表：
+{'#1': {'hostname': '0.0.0.0', 'cpu_count': 2, 'mem_capicity': 800}, '#3': {'hostname': '0.0.0.0', 'cpu_count': 20, 'mem_capicity': 80}, '#4': {'hostname': '1.1.1.1', 'cpu_count': 2, 'mem_capicity': 80}, '#6': {'hostname': '1.1.1.1', 'cpu_count': 26, 'mem_capicity': 800}}
+
+
+方法二：
+#!/usr/bin/env python
+#思路：
+# 1. 原来没有 新的有--> 新加入
+# 2. 原来有 新的也有--> 更新
+# 3. 原来有 新的没有--> 删除原来
+
+#要求，得到3个列表，用set的知识来做：
+#要更新的数据
+#要删除的数据
+#要添加的数据
+
+# 数据库中原有
+c1 = '0.0.0.0'
+c2 = '1.1.1.1'
+old_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#2": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#3": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#5": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80}
+}
+# cmdb 新汇报的数据
+new_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 800},
+    "#3": {'hostname': c1, 'cpu_count': 20, 'mem_capicity': 80},
+    "#4": {'hostname': c2, 'cpu_count': 2, 'mem_capicity': 80},
+    "#6": {'hostname': c2, 'cpu_count': 26, 'mem_capicity': 800}
+}
+update_list = set(old_dict.keys()).intersection(new_dict.keys())
+print("更新的数据：")
+print(update_list)
+delete_list =set()
+for k in old_dict:
+    if k not in new_dict.keys():
+        delete_list.add(k)
+print("删除的数据：")
+print(delete_list)
+insert_list = set()
+for k in new_dict.keys():
+    if k not in old_dict.keys():
+        insert_list.add(k)
+print("插入新的数据：")
+print(insert_list)
+
+
+方法三：
+#!/usr/bin/env python
+#思路：
+# 1. 原来没有 新的有--> 新加入
+# 2. 原来有 新的也有--> 更新
+# 3. 原来有 新的没有--> 删除原来
+
+#要求，得到3个列表，用set的知识来做：
+#要更新的数据
+#要删除的数据
+#要添加的数据
+
+# 数据库中原有
+c1 = '0.0.0.0'
+c2 = '1.1.1.1'
+old_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#2": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#3": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#5": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80}
+}
+
+# cmdb 新汇报的数据
+new_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 800},
+    "#3": {'hostname': c1, 'cpu_count': 20, 'mem_capicity': 80},
+    "#4": {'hostname': c2, 'cpu_count': 2, 'mem_capicity': 80},
+    "#6": {'hostname': c2, 'cpu_count': 26, 'mem_capicity': 800}
+}
+old_set = set(old_dict.keys())
+update_list = list(old_set.intersection(new_dict.keys()))
+
+new_list = []
+del_list = []
+
+for i in new_dict.keys():
+    if i not in update_list:             #可以画张图来理解，两个圆，有集合... 
+        new_list.append(i)
+
+for i in old_dict.keys():
+    if i not in update_list:
+        del_list.append(i)
+
+print (update_list,new_list,del_list)
+
+使用set的方法，最简洁：
+#!/usr/bin/env python
+# 数据库中原有
+c1 = '0.0.0.0'
+c2 = '1.1.1.1'
+old_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#2": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#3": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#5": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80}
+}
+
+# cmdb 新汇报的数据
+new_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 800},
+    "#3": {'hostname': c1, 'cpu_count': 20, 'mem_capicity': 80},
+    "#4": {'hostname': c2, 'cpu_count': 2, 'mem_capicity': 80},
+    "#6": {'hostname': c2, 'cpu_count': 26, 'mem_capicity': 800}
+}
+old = set(old_dict.keys())
+new = set(new_dict.keys())
+update_list = list(old.intersection(new))
+print(update_list)
+delete_list = list(old.symmetric_difference(update_list))   #注意symmetric_difference是取对称差，即将这里old和update_list里面都有的元素去掉，两边剩下的元素再得出一个新的set
+#注意difference和symmetric_difference的区别，difference('a','b','c')是将目标集合里面只要有abc的就去掉，不会把目标集合里面没有的元素加到结果中去。
+print(delete_list)
+insert_list = list(new.symmetric_difference(update_list))   #python的特性，果然是极简和优雅
+print(insert_list)
+
+下面的例子可以解释difference和symmetric_difference的不同：
+#!/usr/bin/env python
+s1 = set(['alex','aaa','ccc'])
+s2 = set(['alex','eric','aaa','bbb','aaa'])
+s3 = s2.symmetric_difference(s1)
+print(s3)                         #打印出：{'eric', 'bbb', 'ccc'}, symmetric_difference()将s1 s2都来出来比较（对称），去掉共同的元素，剩下的所有元素生成一个新的set
+s4 = s2.difference(s1)
+print(s4)                         #打印出：{'eric', 'bbb'}, difference()将s2的所有元素循环一遍，用s1里面的元素去比较，只要s1里面有的元素，全部去掉，但是不会将s2里面没有的元素加到生成的set，这才是取差集
+
+所以上面的例子，正确的写法应该是：
+#!/usr/bin/env python
+# 数据库中原有
+c1 = '0.0.0.0'
+c2 = '1.1.1.1'
+old_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#2": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#3": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80},
+    "#5": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 80}
+}
+
+# cmdb 新汇报的数据
+new_dict = {
+    "#1": {'hostname': c1, 'cpu_count': 2, 'mem_capicity': 800},
+    "#3": {'hostname': c1, 'cpu_count': 20, 'mem_capicity': 80},
+    "#4": {'hostname': c2, 'cpu_count': 2, 'mem_capicity': 80},
+    "#6": {'hostname': c2, 'cpu_count': 26, 'mem_capicity': 800}
+}
+old = set(old_dict.keys())
+new = set(new_dict.keys())
+update_list = list(old.intersection(new))
+print(update_list)
+delete_list = list(old.difference(update_list))   #这里就没有必要用symmetric_difference()了，update_list也可以改成new
+print(delete_list)
+insert_list = list(new.difference(update_list))   #update_list 可以改成old
+print(insert_list)
+
+输出:
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+['#3', '#1']
+['#5', '#2']
+['#6', '#4']
+
+Process finished with exit code 0

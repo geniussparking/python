@@ -1,0 +1,123 @@
+http://www.cnblogs.com/alex3714/articles/5143440.html
+
+二分查找的思路：
+在一个有序的序列里面，先定位到这个序列的中间，取到这个序列中间的值，用这个值和被查找的值作对比，如果小于被查找的值，说明目标在右边；
+如果大于被查找的值，说明目标在左边；
+
+前提条件是：有序的序列，例如有序的列表。
+
+迅速查找一个数
+#!/usr/bin/env python
+def binary_search(data_source,find_n):
+    mid = int(len(data_source)/2)
+    if len(data_source) >= 1:
+        if data_source[mid] > find_n:  #data in left
+            print("data in left of [%s]" % data_source[mid])
+            #prinnt(data_source[:mid])
+            binary_search(data_source[:mid],find_n)
+        elif data_source[mid] < find_n: #data in right
+            print("data in right of [%s]" % data_source[mid])
+            #print(data_source[mid:]
+            binary_search(data_source[mid:],find_n)
+        else:
+            print("find find_s,",data_source[mid])
+    else:
+        print("cannot find...")
+if __name__ == '__main__':
+    data = list(range(1,6000000))
+    #print(data)
+    binary_search(data,65536)
+
+生成列表：
+a = []
+for i in range(10):
+    a.append(i)
+print(a)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+也可以下面的一句生成：
+a = [i for i in range(10)]   # 这句话的意思：先拆分成两部分，i 和 for i in range(10), 后面部分用于生成元素，然后每一个都给前面的i，作为列表的元素
+print(a)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+复杂一点的例子：
+a = [col for col in range(4) for row in range(4)]
+print(a)
+输出：[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+
+从debug的步骤来看，解释器先生成一个前面的col元素，然后生成后面row的三个元素，再回到前面生成一个col的元素，再到后面生成3个, 这样类推
+
+生成二维数组：
+#!/usr/bin/env python
+a = [[col for col in range(4)] for row in range(4)]
+print(a)   # 这里输出[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]]看不出来是二维，下面再循环一下就变成二维数组了；
+for i in a:
+    print(i)
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]]
+[0, 1, 2, 3]
+[0, 1, 2, 3]
+[0, 1, 2, 3]
+[0, 1, 2, 3]
+
+Process finished with exit code 0
+
+将列表顺时针旋转90度
+#!/usr/bin/env python
+a = [[col for col in range(10)] for row in range(10)]
+#print(a)
+for i in a:
+    print(i)            # 打印出二维数组
+print("Begin to rotate:")
+m = 0                   # 设一个初始值在这里，用来表示小列表的遍历次数
+for i in a:             # 这里i 是大列表的第一个列表
+    for j in i:         # 这里开始循环小列表
+       i[j]=i[m]         # 这里相当于是替换小列表的元素  
+    m += 1               # 每循环一次小列表，加1
+for i in a:
+    print(i)
+
+打印：
+D:\Python36\python.exe D:/pythonproject/d1/test111.py
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Begin to rotate:
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+[2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+[4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+[5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+[6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+[7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+[8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+[9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+
+Process finished with exit code 0
+
+enumerate的用法：
+#!/usr/bin/env python
+a = [i for i in range(5)]
+print(a)
+for k,v in enumerate(a):            # 获取列表的index和value
+    print(k,v)
+    
+ D:\Python36\python.exe D:/pythonproject/d1/test111.py
+[0, 1, 2, 3, 4]
+0 0
+1 1
+2 2
+3 3
+4 4
+
+Process finished with exit code 0
+ 

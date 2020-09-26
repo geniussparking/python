@@ -1,0 +1,55 @@
+参考资料：http://www.cnblogs.com/alex3714/articles/5161349.html
+http://www.cnblogs.com/wupeiqi/articles/4963027.html
+
+python官网上，the python package index是全世界python开源模块的集散地:https://pypi.python.org/pypi ,需要账号，然后自己也可以上传开源模块
+
+使用pip命令， pip.exe install openunipay, 这样就能安装openunipay这个库
+
+导入自定义模块：from 同级目录.db import 模块   这里的db是同级目录下面的目录
+
+比如要导入上级的上级的同级的下级的模块怎么办？想办法把最高级的那个目录加入到环境变量：
+import os       #  注意这里import os 其实是相当于有一个os.py的文件，这样引入，下面需要使用os.py里面的方法，需要这样使用: os.方法  
+                #  自己写的py文件需要引入也是一样的
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   
+# os.path.dirname()这个方法用来获取文件路径，去掉文件名，其实它的工作原理就是拿到整个路径包括文件名，然后去掉最后\后面的内容，
+那这样只要嵌套一层，就能又去掉一个\后面的内容
+# os.path.abspath() 获取文件的绝对路径
+# __file__代表当前文件
+然后用sys.path.append(base_dir),将上面的环境变量加进去；再调用就可以了；
+
+
+另外一种导入模块的方法：
+假如有pizza.py这么个文件，现在需要使用这个文件里面的函数make_pizza()，代码如下：
+from pizza import make_pizza    # 这种调用方式叫显示导入，
+                                # 还可以给函数指定别名，以免与本文件中存在的同名函数相冲突：from pizza import make_pizza as mp
+make_pizza(参数)  这里就跟import pizza这种方式不同了，不需要用pizza.make_pizza()这样使用
+
+导入模块的时候，也可以直接给模块给一个别名,例如：import pizza as p, 调用的时候: p.make_pizza()
+
+还可以直接导入某个模块中的所有函数:
+from pizza import *
+但是这种方法不提倡，因为很可能导入的模块中包含与现文件中相同的函数，这样会发生冲突，最安全的做法就是：
+
+导入：import pizza
+调用：pizza.make_pizza() 
+或者：
+导入：from pizza import make_pizza()
+调用：make_pizza()
+
+
+json 和 pickle 模块
+参考资料：http://www.cnblogs.com/alex3714/articles/5161349.html
+
+OS模块：需要跟系统交互，例如文件操作，则需要os模块
+参考资料：http://www.cnblogs.com/alex3714/articles/5161349.html 
+a = os.system('dir')    # 执行dos命令,a获取0表示执行状态，0是成功，不能获取执行结果
+a = os.popen('dir').read()   # 执行dos命令，可以获取命令执行结果；
+print(a)   # 以标准格式打印出执行的结果
+其他方法看博客教程
+
+
+Shutil模块：高级的 文件、文件夹、压缩包 处理模块
+参考资料：http://www.cnblogs.com/wupeiqi/articles/4963027.html
+shelve模块
+http://www.cnblogs.com/alex3714/articles/5161349.html
+模块的视频没有看完。。

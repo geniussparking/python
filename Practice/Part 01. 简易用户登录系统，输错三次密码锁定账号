@@ -1,0 +1,49 @@
+#使用Python 3 实现简易用户登录系统，输错三次密码锁定账号。
+
+#文件结构：
+
+#lock.txt
+#保存被锁定的用户，一行一个
+
+#users.txt
+#保存用户账号密码，按照以下格式
+#{"jack":"1234","tom":"123","alex":"12345"}
+
+#login.py
+import getpass　　　　# 使用getpass模块，输入密码的时候是密文
+import json
+username = input("input username:")
+with open("users.txt",'r') as f:　　# 用户表，保存用户名和密码
+   contents = f.read()
+users = json.loads(contents)   # convert to dict type
+with open("lock.txt",'r') as lock_file:　　　　# lock.txt保存被锁定用户，这里读取出来用于判断用户输入的账号是否已经被锁定
+    lock_users = lock_file.readlines()
+lock_user_list=list()
+for lock_user in lock_users:
+    lock_user_list.append(lock_user.strip())    # 转换成列表，并去除每个元素后面的换行符
+if username in lock_user_list:
+    print("your account {username} has been locked, please contact the administrator.".format(username=username))    # 字符串格式化，在lock.txt直接退出
+    exit()
+count = 0　　　　　　# 计数器，用于统计用户输入密码次数
+count_left = 3　　　　# 还剩几次
+if username in users:　　　　# 外层循环，判断用户是否存在，不存在直接退出，存在则进入密码输入环节
+    while count < 3:　　　　　# 计数3次
+       #password = input("input your password:")
+       password = getpass.getpass("input your password:")    # getpass模块
+       if password == users[username]:
+           print("welcome aboard, {username}!".format(username = username))
+           break
+       else:
+           count_left -= 1
+           while count_left:
+               print("invalid password, try again and {count_left} times left!".format(count_left=count_left))
+               break
+           count += 1
+    else:
+        print("invalid password, try maximum times, your account has been locked.")    # 尝试超过最大次数限制，锁定账户，将username存进lock.txt，一行一个
+        block = open("lock.txt","a")
+        block.write(username+'\r')
+        block.close()
+else:
+    print("no such username: {username}, exit.".format(username=username))
+    exit()

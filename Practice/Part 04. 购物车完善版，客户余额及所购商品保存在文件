@@ -1,0 +1,100 @@
+购物车优化：
+用户入口：
+	商品信息存在文件里；
+	已购商品，余额记录保存在文件里，下次运行程序要读取上一次运行后的余额信息
+商家入口：
+	可以添加商品，修改商品价格
+
+文件：
+1. customer.txt  
+3220
+{'shampoo': '1', 'iphone 8': 2, 'iphone X': 2, 'starbucks latte': 6, 'bread': 13, 'book': 12, 'MacPro': 1}
+
+2. goods.txt
+{"MacPro":"12000","iphone 8":"8000","iphone X":"10000","starbucks latte":"25","book":"50","bread":"5","shampoo":"25"}
+
+3. index.py
+
+import json
+with open("goods.txt",'r') as f:
+   contents = f.read()
+goods_list = json.loads(contents)   # convert to dict type 获取商品列表，字典格式
+with open("customer.txt",'r') as f:
+   contents = f.readlines()
+customer_lines = list()
+for line in contents:
+    customer_lines.append(line.strip())
+salary = int(customer_lines[0])         # 分别获取余额和已购买的商品
+items_bought = eval(customer_lines[1])    # 字符串转换成字典
+
+confirm = input("Your balance is {balance}, do you want to add more money? 'y' to add".format(balance = salary))   # 要不要加钱
+if confirm == 'y':
+    add_salary = int(input("Money you wanna add: "))
+    salary = salary + add_salary                # 更新余额
+    print("Your latest balance is {salary}".format(salary = salary))
+
+available_goods = list()    # available_goods 保存的是根据salary可以买的商品
+for i in goods_list:
+    if salary >= int(goods_list[i]):
+        available_goods.append(i)
+if len(available_goods) == 0:
+    print("You have no enought money, now exit.")       # 没有可以购买的商品，直接退出
+    exit()
+print("Goods for you:")
+goods_order = 1
+for j in available_goods:       # 一行一个打印出可以购买的商品
+    print("{goods_order}: {j}, price: {goods}".format(goods_order=goods_order,j=j, goods=goods_list[j]))
+    goods_order += 1
+# print(len(available_goods))   # 有多少个商品可以买
+
+chose_list = dict()
+total_price = 0
+total_price_tmp = 0
+while True:
+    choose_order = int(input("Please choose an item:"))
+    while choose_order > len(available_goods) or choose_order <= 0:      # 如果可购买商品列表范围，则提示用户直到输入的order存在为止
+        choose_order = int(input("The item you selected not exsit, try again:"))
+    choose_order_num = int(input("How many do you want?"))
+    if available_goods[choose_order-1] in chose_list:
+        chose_list[available_goods[choose_order - 1]] = chose_list[available_goods[choose_order-1]] + choose_order_num
+    else:
+        chose_list[available_goods[choose_order-1]] = choose_order_num
+    print("Items you chose:")
+    for i in chose_list:                # 打印出本次选择的商品及数量
+        print(i,':',chose_list[i])
+    for k in chose_list:                # 计算本次选购商品的总价格
+        total_price_tmp = total_price_tmp + int(goods_list[k])*chose_list[k]
+    total_price = total_price_tmp
+    total_price_tmp = 0
+    if salary < total_price:            # 如果超过余额，则清空重选
+        print("The total price of your items is {total_price}".format(total_price=total_price))
+        print("You don't have enought balance. please try again.")
+        chose_list.clear()
+        total_price = 0
+    else:
+        print("The total price of your items is {total_price}".format(total_price=total_price))
+    buy_again = input("'c'to calculate, 'q' to cancel, other key to continue:")         # 继续不
+    if buy_again == "q":
+        print("Cancel all. Your balance is {salary}".format(salary=salary))
+        break
+    elif buy_again == 'c':              # 选c 计算商品价格
+        balance = salary - total_price
+        if balance == salary:
+            print("Your balance is {balance}, you didn't buy anything.".format(balance=balance))
+        else:
+            print("Your balance is {balance}, the items you bought this time are blow:".format(balance=balance))
+        for item in chose_list:
+            print("{item}, amount: {count}, cost {price}".format(item = item, count = chose_list[item], price = int(chose_list[item]) * int(goods_list[item])))
+        break
+for i in chose_list:        # 更新购买的商品字典
+    if i in items_bought:
+        items_bought[i] += chose_list[i]
+    else:
+        items_bought.update(chose_list)
+print("All the items you bought are blow:")
+for i in items_bought:
+    print(i,':',items_bought[i])
+f = open("customer.txt","w")        # 更新customer.txt文件
+f.write(str(balance)+'\r')
+f.write(str(items_bought))
+f.close()

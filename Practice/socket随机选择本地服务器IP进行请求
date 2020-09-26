@@ -1,0 +1,12 @@
+import socket,random,requests,time
+true_socket = socket.socket
+ipList = ["IP1","IP2"]
+sourceIP = random.choice(ipList)
+def bound_socket(*a, **k):
+    sock = true_socket(*a, **k)
+    sock.bind((sourceIP,0))
+    return sock
+socket.socket = bound_socket
+time.sleep(0.3)
+response = requests.get(url="https://www.httpbin.org/ip")
+print(response.text)

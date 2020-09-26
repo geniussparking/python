@@ -1,0 +1,88 @@
+# 不完美
+data = {
+    '北京':{
+        '海淀':{
+            '五道口':{
+                'soho':{},
+                '网易':{},
+                'google':{}
+            },
+            '中关村':{
+                '爱奇艺':{},
+                '汽车之家':{},
+                'youku':{},
+            },
+            '上地':{
+                '百度':{},
+            },
+        },
+        '昌平':{
+            '沙河':{
+                '老男孩':{},
+                '北航':{},
+            },
+            '天通苑':{},
+            '回龙观':{},
+        },
+        '朝阳':{},
+        '东城':{},
+    },
+    '上海':{
+        '闵行':{
+            "人民广场":{
+                '炸鸡店':{}
+            }
+        },
+        '闸北':{
+            '火车战':{
+                '携程':{}
+            }
+        },
+        '浦东':{},
+    },
+    '山东':{},
+}
+Flag = True
+for i in data:
+    print(i)
+while Flag:
+    Choose_01 = input("Choose>>>")
+    if Choose_01 in data:
+        for i in data[Choose_01]:
+            print(i)
+        while Flag:
+            Choose_02 = input("Choose>>>")
+            if Choose_02 in data[Choose_01]:
+                for i in data[Choose_01][Choose_02]:
+                    print(i)
+                while Flag:
+                    Choose_03 = input("Choose>>>")
+                    if Choose_03 in data[Choose_01][Choose_02]:
+                        for i in data[Choose_01][Choose_02][Choose_03]:
+                            print(i)
+                        exit("No more Choice, now exit.")
+                    elif Choose_03 == 'q':
+                        print("Go Back")
+                        for i in data[Choose_01]:
+                            print(i)
+                        break
+                    else:
+                        print("Not Exsit_layer 3, choose again.")
+                        for i in data[Choose_01][Choose_02]:
+                            print(i)
+            elif Choose_02 == 'q':
+                print("Go Back")
+                for i in data:
+                    print(i)
+                break
+            else:
+                print("Not Exsit_layer 2, choose again.")
+                for i in data[Choose_01]:
+                    print(i)
+    elif Choose_01 == 'q':
+        print("Exit")
+        break
+    else:
+        print("Not Exsit_layer 1, choose again.")
+        for i in data:
+            print(i)

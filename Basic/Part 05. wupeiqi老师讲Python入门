@@ -1,0 +1,145 @@
+参考资料：http://www.cnblogs.com/wupeiqi/articles/5115190.html 
+http://www.cnblogs.com/wupeiqi/articles/4906230.html
+《python源码剖析》
+
+Python的种类
+Cpython
+    Python的官方版本，使用C语言实现，使用最为广泛，CPython实现会将源文件（py文件）转换成c字节码文件（pyc文件）（c解释器），然后运行在Python虚拟机上。
+Jyhton
+    Python的Java实现，Jython会将Python代码动态编译成Java认识的字节码（java解释器），然后在JVM上运行。跟java交互比较快
+IronPython
+    Python的C#实现，IronPython将Python代码编译成C#字节码（c#解释器），然后在CLR上运行。（与Jython类似）。跟c#交互比较快
+PyPy（特殊）
+    Python实现的Python，将Python的字节码字节码再编译成机器码。编译慢，运行比较快！
+RubyPython、Brython ...
+
+字符编码：
+起初：8位表示,不够用
+后来：unicode 至少16位
+再后来：utf-8，对unicode的精简和优化，有利于节省储存空间；字母、数字、字符是ascii码，按照8位存储；欧洲的一些字用2个字节16位来存储；中文用3个字节24位来存储；
+gbk和utf-8都是对unicode的精简
+gbk和utf-8互相转换：gbk <--> unicode <--> utf-8
+unicode-->utf8  encode
+utf8-->unicode  decode
+unicode-->gbk  encode
+gbk-->unicode  decode
+unicode在顶部，utf8和gbk要相互转化必须依赖（经过）unicode
+
+五、执行脚本传入参数
+
+Python有大量的模块，从而使得开发Python程序非常简洁。类库有包括三中：
+
+Python内部提供的模块
+业内开源的模块
+程序员自己开发的模块
+Python内部提供一个 sys 的模块，其中的 sys.argv 用来捕获执行执行python脚本时传入的参数
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+print (sys.argv)
+将上面代码保存成index.py文件
+在执行这个py文件之前需要将电脑的默认python版本变成3.0版本，即在dos界面输入python直接可以进入3.0版本
+然后再dos界面先进入这个文件所在的目录，再这样执行：python index.py runserver
+会得到：
+D:\pythonproject\d1>python checkuser.py runserver
+['checkuser.py', 'runserver']
+如果runserver后面再加参数，照样会以列表的形式输出：
+D:\pythonproject\d1>python checkuser.py runserver 0.0.0.0
+['checkuser.py', 'runserver', '0.0.0.0']
+
+
+六、 pyc 文件
+
+执行Python代码时，如果导入了其他的 .py 文件，那么，执行过程中会自动生成一个与其同名的 .pyc 文件，该文件就是Python解释器编译之后产生的字节码。
+ps：代码经过编译可以产生字节码；字节码通过反编译也可以得到代码。
+就算py文件删除了，python还是会先找pyc文件优先执行，如果直接更改了pyc文件，python解释器会优先执行py文件，生存pyc，原修改过的pyc文件会被覆盖；
+
+Python缓冲池的概念：用来提高执行效率；
+
+七、变量
+3、字符串
+"hello world"  
+字符串在python中的存储方式跟c语言一样，是以列表的形式存储的，只不过看起来是字符串而已；"hello world"实质：['h','e','l','l','o',' ','w','o','r','l','d']
+万恶的字符串拼接：
+python中的字符串在C语言中体现为是一个字符数组，每次创建字符串时候需要在内存中开辟一块连续的空，并且一旦需要修改字符串的话，就需要再次开辟空间，万恶的+号每出现一次就会在内从中重新开辟一块空间。
+
+字符串格式化,只开辟两次，不用多次开辟空间
+name = "alex"
+print "i am %s " % name
+ 
+#输出: i am alex
+PS: 字符串是 %s;整数 %d;浮点数%f
+
+字符串常用功能：
+移除空白
+分割
+长度
+索引
+切片
+
+列表：
+新建列表的方法：
+11=[1,2,3,4]
+或者：
+11=list(1,2,3,4)
+元组：
+元组的元素不可修改
+元组的元素的元素可以修改，例如元组里面的元素是字典，列表，这些字典列表的元素是可以修改的
+请看如下过程：
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+a = (1,2,{'k1':'v1'})
+print(type(a))
+print(a)
+print(a[2])
+a[2]['k1']=3
+print(a)
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+<class 'tuple'>
+(1, 2, {'k1': 'v1'})
+{'k1': 'v1'}
+(1, 2, {'k1': 3})
+字典：
+索引
+新增  d[key] xx
+删除  del d[key]
+键、值、键值对 {'k1': 'v1'}
+循环
+长度
+
+要在编辑器里面查看list int tuple等类的方法：
+直接在编辑器里面输入list,然后按住ctrl键，鼠标左键点击后就会出来所有关于这个list的方法，左边点“齿轮”，点show members,再点左边的“定位”按钮就可以找到这个类的所有方法；
+其他的类也用类似的方法即可；
+
+python主文件判断：
+当写了很多python文件，通常要执行所写的程序，都会执行一个主文件，例如执行 python index.py
+那python解释器会自动创建一个全局变量__name__，主文件的__name__的值就是'__main__',其他文件的__name__值就是相对应的文件名；
+
+Python一切事物都是对象，对象由类创建，对象是基于类创建的，对象的所有的功能（方法）都可以去类里面去找；例如列表的所有方法都在list类里面；
+
+int的方法：
+age = 18
+age.bit_length()
+5
+bin(18)
+'0b10010'
+
+#divmod方法
+a = 10
+print(a.__divmod__(3))     # 除以3，并得到余数，相当于取模运算，但是会把结果和余数都保存到一个元组
+print(divmod(a,3))
+输出：
+(3, 1)
+(3, 1)
+
+#abs方法
+a = -10
+print(a.__abs__())
+print(abs(a))
+输出：
+10
+10
+其他的方法省略，可以使用dir查看
+

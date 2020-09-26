@@ -1,0 +1,87 @@
+from urllib import request
+from bs4 import BeautifulSoup   # pip install beautifulsoup4
+import gevent,time,datetime,os  # # pip install gevent
+from gevent import monkey   # 默认情况下，gevent不认识urllib的IO操作，这里需要给gevent打补丁，然后才能支持异步并发
+monkey.patch_all() #把当前程序的所有的io操作给我单独的做上标记，需要加上这句话
+date_today=datetime.date.today().strftime('%Y%m%d')   # 获得今天的日期 20180726
+
+def domain_txt_to_dict(file_name):   # 将domains.txt 变成字典
+    if os.path.exists(file_name):
+        pass
+    else:
+        file = open(file_name,'a')
+        file.close()
+    with open(file_name, "r", encoding="utf-8") as f_obj:
+        raw_list = []
+        raw_dic = {}
+        lines = f_obj.readlines()
+        for line in lines:
+            if len(line.strip()) > 0:
+                raw_list.append((line.strip()))
+        for j in raw_list:
+            raw_dic[j.split("\t")[0]] = j.split("\t")[1]
+        return raw_dic
+def f(domain):   # 传入domain,执行访问，获取标题，获取访问失败的域名
+    try:
+        url = "http://www."+domain
+        data = request.urlopen(url,timeout=30).read()
+        title = BeautifulSoup(data,"lxml").title.string
+        if len(title) > 0:
+            with open('ok' + date_today + '.txt', "a+", encoding="utf-8") as domain_ok:
+                domain_ok.write("{domain}\t{title}\n".format(domain = domain, title = title))   # 动态数据追加写入文件，不再用变量保存
+            print(domain, '-->', title)
+    except BaseException as e:
+        with open('error' + date_today + '.txt', "a+", encoding="utf-8") as domain_error:
+            domain_error.write("{domain}\t无法访问\n".format(domain=domain))  # 动态数据追加写入文件，不再用变量保存
+        print(domain,"--> error",e)
+
+def exec_spawn(domain_dict_iter,spawn_num):   # 传入字典迭代器，并发数
+    exec_list = []  # 初始化执行列表
+    while True:
+        try:
+            for i in range(spawn_num):
+                domain = domain_dict_iter.__next__().strip()
+                exec_list.append(domain)
+        except StopIteration:
+            print("domains_dict_iter迭代器循环完毕。")
+        size_exec_list = len(exec_list)
+        if size_exec_list == 0:
+            print("无更多域名。")
+            break
+        print("本次执行数量：",size_exec_list)
+        gevent.joinall([(gevent.spawn(f,exec_list[i])) for i in range(size_exec_list)])   # 列表生成式
+        exec_list.clear()  # 每循环一次清空执行列表
+
+if __name__ == '__main__':
+    domains_dict = domain_txt_to_dict("domains.txt")  # 获取域名总表字典
+    exec_domains_dict = {}
+    if os.path.exists('ok' + date_today + '.txt'):
+        ok_dict = domain_txt_to_dict('ok' + date_today + '.txt')
+        for domain in domains_dict:
+            if domain not in ok_dict:
+                exec_domains_dict[domain] = domains_dict[domain]
+    else:
+        exec_domains_dict = domains_dict.copy()
+    print("总任务量：",len(exec_domains_dict))
+    exec_domains_dict_iter = iter(exec_domains_dict)  # 字典变成迭代器
+    exec_spawn(exec_domains_dict_iter, 50)   # 初始化执行
+
+    for i in range(1,6):  # 失败的任务重复执行5次
+        error_dict = domain_txt_to_dict('error' + date_today + '.txt')
+        if len(error_dict) > 0:
+            os.remove('error' + date_today + '.txt')
+            print("重复执行失败任务，当前执行次数：",i,"，剩下次数：",5-i)
+            exec_spawn(iter(error_dict),20)
+        else:
+            print("获取标题任务执行完毕。")
+            break
+
+    if os.path.exists('ok' + date_today + '.txt'):
+        achieved_dict = domain_txt_to_dict('ok' + date_today + '.txt')
+        print("正在检测域名标题是否存在异常...")
+        for achieved_domain in achieved_dict:
+            if achieved_dict[achieved_domain][:5] != domains_dict[achieved_domain][:5]:
+                print("异常标题，请检查：",achieved_domain,achieved_dict[achieved_domain])
+                with open("异常标题{date_today}.txt".format(date_today=date_today),"a+",encoding="utf-8") as abnormal:
+                    abnormal.write("{achieved_domain}\t{achieved_title}\n".format(achieved_domain = achieved_domain,achieved_title = achieved_dict[achieved_domain]))
+        print("任务执行完成。请查看error和异常标题文本文件。")

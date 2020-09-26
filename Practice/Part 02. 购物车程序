@@ -1,0 +1,52 @@
+salary = int(input("Input your salary:"))
+goods_list ={"MacPro":"12000","iphone 8":"8000","iphone X":"10000","starbucks latte":"25","book":"50","bread":"5","shampoo":"25"}
+available_goods = list()    # available_goods 保存的是根据salary可以买的商品
+for i in goods_list:
+    if salary >= int(goods_list[i]):
+        available_goods.append(i)
+if len(available_goods) == 0:
+    print("You have no enought money, now exit.")
+    exit()
+print("Goods for you:")
+goods_order = 1
+for j in available_goods:
+    print("{goods_order}: {j}, price: {goods}".format(goods_order=goods_order,j=j, goods=goods_list[j]))
+    goods_order += 1
+# print(len(available_goods))   # 有多少个商品可以买
+chose_list = dict()
+total_price = 0
+total_price_tmp = 0
+while True:
+    choose_order = int(input("Please choose an item:"))
+    while choose_order > len(available_goods) or choose_order <= 0:      # 如果可购买商品列表范围，则提示用户直到输入的order存在为止
+        choose_order = int(input("The item you selected not exsit, try again:"))
+    choose_order_num = int(input("How many do you want?"))
+    if available_goods[choose_order-1] in chose_list:
+        chose_list[available_goods[choose_order - 1]] = chose_list[available_goods[choose_order-1]] + choose_order_num
+    else:
+        chose_list[available_goods[choose_order-1]] = choose_order_num
+    print(chose_list)
+    for k in chose_list:
+        total_price_tmp = total_price_tmp + int(goods_list[k])*chose_list[k]
+    total_price = total_price_tmp
+    total_price_tmp = 0
+    if salary < total_price:
+        print("The total price of your items is {total_price}".format(total_price=total_price))
+        print("You don't have enought balance. please try again.")
+        chose_list.clear()
+        total_price = 0
+    else:
+        print("The total price of your items is {total_price}".format(total_price=total_price))
+    buy_again = input("'c'to calculate, 'q' to cancel, other key to continue:")
+    if buy_again == "q":
+        print("Cancel all. Your balance is {salary}".format(salary=salary))
+        break
+    elif buy_again == 'c':
+        balance = salary - total_price
+        if balance == salary:
+            print("Your balance is {balance}, you didn't buy anything.".format(balance=balance))
+        else:
+            print("Your balance is {balance}, the items you bought are blow:".format(balance=balance))
+        for item in chose_list:
+            print("{item}, amount: {count}, cost {price}".format(item = item, count = chose_list[item], price = int(chose_list[item]) * int(goods_list[item])))
+        break

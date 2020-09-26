@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import urllib.request
+import urllib.error
+import time
+def get_error_domain(domain_list):    # 将获取网站状态码以及输出异常域名的功能写成函数，调用的时候只需要将文件路径放进参数即可
+    error_list = set()              # 预定义一个set集合,因为set集合是自动去重的，后面有用
+    url_list = open(domain_list, 'r')
+    for line in url_list:
+        if len(line.strip()):           # 将空行去掉，满足非空行的行可以进入条件进行循环
+            line_no_blank = line.strip()
+            url = "http://www."+ line_no_blank
+            error_code = ''
+            error_reason = ''
+            try:                        # 使用try except语句避免因异常域名导致整个for大循环报错终止
+                start = time.clock()
+                file = urllib.request.urlopen(url,timeout=15)
+                elapsed = (time.clock() - start)        # 获取访问时长
+                print("%s---->%s, 耗时%s" %(line_no_blank,file.getcode(),elapsed))
+            except urllib.error.URLError as e:          # 异常域名会进入except，可以得到出错原因和出错http状态码
+                print("%s异常" % line_no_blank)
+                if hasattr(e, "code"):
+                    print("错误状态码：%s" % e.code)
+                    error_code = str(e.code)
+                if hasattr(e, "reason"):
+                    print("出错原因:%s" % e.reason)
+                    error_reason = str(e.reason)
+                error_status = error_code + '\t'+error_reason
+                error_list.add(line_no_blank+'\t'+error_status+"\n")   # 将所有异常域名存入set集合，会自动去重
+    url_list.close()
+    print("所有异常域名：")
+    for line in error_list:             # 循环打印
+        print(line)
+    abnormal_list = open('异常域名.txt', 'w')    # 如果之前有检测记录，则直接被覆盖
+    abnormal_list.writelines(error_list)            # 将set的元素全部一次性写入
+    abnormal_list.close()                       # 关闭文件句柄
+
+get_error_domain('域名表.txt')    # 调用函数，传入需要检测的域名表文件名,一行一个,不需要加http://www., 例如: baidu.com
+
+
+
+不精简的代码：
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import urllib.request
+import urllib.error
+import time
+import os
+def get_error_domain(domain_list):    # 将获取网站状态码以及输出异常域名的功能写成函数，调用的时候只需要将文件路径放进参数即可
+    if os.path.exists("异常域名.txt"):
+        os.remove("异常域名.txt")  # 如果存在之前的测试记录，则删除
+    url_list = open(domain_list, 'r')
+    for line in url_list:
+        if len(line.strip()):           # 将空行去掉，满足非空行的行可以进入条件进行循环
+            line_no_blank = line.strip()
+            url = "http://www."+ line_no_blank
+            error_code = ''
+            error_reason = ''
+            try:                        # 使用try except语句避免因异常域名导致整个for大循环报错终止
+                start = time.clock()
+                file = urllib.request.urlopen(url,timeout=15)
+                elapsed = (time.clock() - start)
+                print("%s---->%s, 耗时%s" %(line_no_blank,file.getcode(),elapsed))
+            except urllib.error.URLError as e:          # 异常域名会进入except，可以得到出错原因和出错http状态码
+                print("%s异常" % line_no_blank)
+                if hasattr(e, "code"):
+                    print("错误状态码：%s" % e.code)
+                    error_code = str(e.code)
+                if hasattr(e, "reason"):
+                    print("出错原因:%s" % e.reason)
+                    error_reason = str(e.reason)
+                error_status = error_code + '\t'+error_reason
+                f_wrong = open('异常域名.txt','a')
+                f_wrong.write(line_no_blank+'\t'+error_status+"\n")
+                f_wrong.close()
+    url_list.close()
+    # 下面进行去重处理，使用set，因为set里面的元素是唯一的
+    abnormal_list = open('异常域名.txt', 'r')
+    # 将异常域名读入set
+    s1 = set(abnormal_list.readlines())
+    print("所有异常域名：")
+    for line in s1:
+        print(line)
+    abnormal_list.close()
+    abnormal_final = open("异常域名.txt", 'w')      # 这里
+    abnormal_final.writelines(s1)
+    abnormal_final.close()
+
+get_error_domain('域名表.txt')    # 传入需要检测的域名,一行一个,不需要加http://www., 例如: baidu.com

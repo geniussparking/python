@@ -1,0 +1,301 @@
+Python基础知识：28周课程，重听
+http://www.cnblogs.com/alex3714/articles/5465198.html
+
+Python环境搭建（Windows环境下）
+
+Python下载
+www.python.org官网
+Python安装，包括Python2和Python3。如何在本地配置双版本环境。
+推荐安装路径为D:\Python27和D:\Python35，因为如果路径有空格的话（D:\Program Files\Python35）pip可能会有问题.
+1. 安装python3的时候,自定义安装,并且勾选添加到环境变量path;
+2. 将D:\Python35\python.exe修改为python3.exe，D:\Python35\Scripts\pip.exe改为pip3.exe，如果已经有pip3.exe，就把pip.exe删除。
+3. 以后需要使用Python3的环境就在终端输入python3就行;
+4. 实现在终端输入python直接进入python2: 右键我的电脑-属性-高级系统设置--环境变量--系统变量找到path路径--编辑--
+将路径D:\Python27\和D:\Python27\Scripts\添加到系统变量，并移到最前面，win7系统直接加在前面，用英文分号隔开；
+5. 现在输入python就能直接使用python2了；
+
+编辑器安装pycharm-professional-2016.3.2, 然后在网上找kyes进行激活
+
+1.因为python和Linux息息相关，所以有必要熟悉Linux的基本操作，安装Linux虚拟机和secure crt
+2. Linux的文件给可执行权限的方式：chmod +x hello.py, 然后使用./hello.py即可执行
+3. 在终端直接执行python的方式：python hello.py 添加过执行权限的文件可以./hello.py直接执行，如果出现语法错误，则需要在py文件首行加上用什么程序来执行，py需要加上: #! /usr/bin/env python
+4. vim下，yy复制，p粘贴
+
+Python的变量
+a=1
+b=a
+a=3
+print(a,b)所得的结果是3,1，这是因为在给a赋值的时候，python的解释器开辟了一块内存放1，赋值只是将变量指向这个1，b=a也是指b指向这个1，当某个值不再使用，解释器会将这块内存释放掉；使用函数id()即可看变量指向的ID地址，这里的id地址还不是物理地址，跟c语言不同，这里是python解释器从操作系统申请了一大块内存，自己去划分的。
+
+单行注释：#
+
+变量起名：和php一样，由下划线或字母开头，下划线、数字、字母组成变量，最好驼峰式命名，也可以用下划线，例如: age_of_alex，编程语言中最好只有一种命名风格，要么驼峰式，要么下划线；
+
+用户交互，使用input()函数
+python 2.7 里面input()是输入什么类型的数据就是什么类型的，可以是变量，字符，数字，例如：
+name = input(“please input your name”)
+接下来会提示输入，如果输入不带引号的字符，这里python解释器会将输入的字符当做变量，然后在内存里面扫一遍看输入的这个变量有没有定义过，如果定义过了，就相当于把这个变量的值输入了；如果没有定义过，则会报错，提示没有定义变量；如果想输入字符，那就加双引号；
+python 3里面，默认全部是字符串，输入字符串不用加双引号，直接输入就行；
+如果python3要实现和python2的input()效果，则要eval(input())
+
+以下是一个猜数字的程序，if判断
+# -*- coding:utf-8 -*-
+#3.0里input()默认输入全是字符串，所以这里要int()转换一下; 2.0里面，输入的是什么，input获得的就是什么
+num = int(input("please enter a number here:"))
+print(num)
+if num == 101:
+    print("Bingo!")
+elif num > 101:
+    print("please enter a smaller number!!")
+else:
+    print("please enter a larger number!!")
+
+
+# -*- coding:utf-8 -*-
+#使用while True作为条件，执行循环；使用break退出循环
+while True:
+    num = int(input("please enter a number here:"))
+    print(num)
+    if num == 101:
+        print("Bingo!")
+        break
+    elif num > 101:
+        print("please enter a smaller number!!")
+    else:
+        print("please enter a larger number!!")
+
+
+还可以这么写，注意这里的while
+# -*- coding:utf-8 -*-
+luckyNumber = 101
+inputNumber = -1
+while inputNumber != luckyNumber:
+    inputNumber = int(input("please input your lucky number here:"))
+    if inputNumber == luckyNumber:
+        print("Bingo!")
+    elif inputNumber > luckyNumber:
+        print("please enter a smaller number!!")
+    else:
+        print("please enter a bigger number!!")
+
+这样写更完美：
+# -*- coding:utf-8 -*-
+luckyNumber = 101
+inputNumber = -1
+while inputNumber != luckyNumber:
+    inputNumber = int(input("please input your lucky number here:"))
+    if inputNumber > luckyNumber:
+        print("please enter a smaller number!!")
+    elif inputNumber < luckyNumber:
+        print("please enter a bigger number!!")
+print("Bingo!!")
+
+
+加计数器的写法：
+# -*- coding:utf-8 -*-
+luckyNumber = 101
+inputNumber = -1
+guessCount = 0
+while guessCount < 3:
+    inputNumber = int(input("please input your lucky number here:"))
+    if inputNumber > luckyNumber:
+        print("please enter a smaller number!!")
+    elif inputNumber < luckyNumber:
+        print("please enter a bigger number!!")
+    else:
+        print("Bingo!!")
+        break
+    guessCount += 1
+else:
+    print("too many retries!!")
+    
+写成for循环：
+# -*- coding:utf-8 -*-
+luckyNumber = 101
+inputNumber = -1
+for i in range(3):
+    inputNumber = int(input("please input your lucky number here:"))
+    if inputNumber > luckyNumber:
+        print("please enter a smaller number!!")
+    elif inputNumber < luckyNumber:
+        print("please enter a bigger number!!")
+    else:
+        print("Bingo!!")
+        break
+else:
+    print("too many retries!!")
+    
+Python里只有0,1表示False和True, for example: 0 == False 1 == True都会返回 True 
+2 == True会返回False
+
+字符串格式化：
+# -*- coding:utf-8 -*-
+name = input("Enter your name:")
+age = input("Enter your age:")
+sex = input("Enter your sex:")
+
+#使用三个单引号以及占位符，可以自由换行，类似定界符
+msg = '''
+information of %s:
+Name:%s
+Age:%s
+Sex:%s
+''' % (name, name, age, sex)
+print(msg)
+
+#使用连字符+，每一块字符串都会再内存里开辟一个新的内存空间
+print("information of " + name + ":\nName:" + name + "\nAge:" + age + "\nSex:" + sex )
+
+#使用占位符，只开辟一块内存空间，效率更高
+print("information of %s:\nName:%s\nAge:%s\nSex:%s" % (name, name, age, sex) )    
+
+还有%d表示整型，%f表示浮点型，相应的在input()前面应该加上int和float
+# -*- coding:utf-8 -*-
+name = input("Enter your name:")
+age = float(input("Enter your age:"))
+sex = input("Enter your sex:")
+msg = '''
+information of %s:
+Name:%s
+Age:%f
+Sex:%s
+''' % (name, name, age, sex)
+print(msg)
+
+关于字符串的一些函数：
+strip()函数的使用
+# -*- coding:utf-8 -*-
+#strip()函数的使用相当于是一个对象的方法那样使用，直接在input()后面，括号内加字符了表示将目标前后的这个字符都去掉，不加字符strip()这样表示去掉前后空格
+#注意：当目标字符串是空格加A，例如：    Alex, 虽然strip("A")，但是不能去掉A，因为A前面有空格。
+name = input("Enter your name:").strip("A")
+age = float(input("Enter your age:"))
+sex = input("Enter your sex:")
+msg = '''
+information of %s:
+Name:%s
+Age:%f
+Sex:%s
+''' % (name, name, age, sex)
+print(msg)
+
+列表：list
+例如在Linux里：
+>>> name_list=['alex', 'bigbrother', 'google']
+>>> name_list
+['alex', 'bigbrother', 'google']
+>>> dir(name_list)
+['__add__', '__class__', '__contains__', '__delattr__', '__delitem__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']
+想查询某个list有哪些方法，使用dir()函数，输出的结果，有前后双下划线的是私有方法，不能使用；
+可以使用的方法：'append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort'
+例如：
+>>> name_list.append('baidu')
+>>> name_list
+['alex', 'bigbrother', 'google', 'baidu']
+这里后面就插入了baidu
+
+获取索引值：
+>>> name_list.index('google')
+2
+
+利用索引值取出相对应的值：
+>>> name_list[2]
+'google'
+
+再插入几个google后，使用count方法获取相应元素的个数
+>>> name_list
+['alex', 'bigbrother', 'google', 'baidu', 'google', 'google']
+>>> name_list.count('google')
+3
+
+insert()方法：
+>>> name_list
+['alex', 'bigbrother', 'google', 'baidu', 'google', 'google']
+>>> name_list.insert(2,'smallbro')
+>>> name_list
+['alex', 'bigbrother', 'smallbro', 'google', 'baidu', 'google', 'google']
+
+pop()删除最后一个元素
+>>> name_list.pop()
+'google'
+>>> name_list
+['alex', 'bigbrother', 'smallbro', 'google', 'baidu', 'google']
+
+remove()方法：如果有重复的，只删除索引值比较小的那个，只删除一个
+>>> name_list
+['alex', 'bigbrother', 'smallbro', 'google', 'baidu', 'google']
+>>> name_list.remove('google')
+>>> name_list
+['alex', 'bigbrother', 'smallbro', 'baidu', 'google']
+
+reverse()反转和sort()，按照ascii值排序（python3无法让int和str排序）
+>>> name_list
+['alex', 'bigbrother', 'smallbro', 'baidu', 'google']
+>>> name_list.reverse()
+>>> name_list
+['google', 'baidu', 'smallbro', 'bigbrother', 'alex']
+>>> name_list.sort()
+>>> name_list
+['alex', 'baidu', 'bigbrother', 'google', 'smallbro']
+
+循环删除列表里面的某个元素，包括重复的
+>>> name_list
+['alex', 'baidu', 'bigbrother', 'google', 'smallbro']
+>>> for i in range(name_list.count('google')):
+...      name_list.remove('google')
+... 
+>>> name_list
+['alex', 'baidu', 'bigbrother', 'smallbro']
+
+列表的切片：
+>>> a=[3,4,1,2,6,7,8,9]
+>>> a[0:2]  #取索引值0到4的元素组成新的列表，包含0，不包含尾
+[3, 4]
+>>> a[1:3]
+[4, 1]
+>>> a[3:6]
+[2, 6, 7]
+>>> a[0:2:3]
+[3]
+>>> a[0:6:3]  #取索引值0到6的元素组成新的列表，每3个取出一个
+[3, 2]
+>>> a[0:7:3]
+[3, 2, 8]
+还可以这么取：
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9]
+>>> a[:3]
+[3, 4, 1]
+>>> a[-2:]
+[8, 9]
+>>> a[-2:-1]
+[8]
+
+extend()方法，将两个列表合并起来；
+>>> b=['a','b']
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9]
+>>> b
+['a', 'b']
+>>> a+b
+[3, 4, 1, 2, 6, 7, 8, 9, 'a', 'b']
+>>> a.extend(b)  #这里相当于a=a+b
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9, 'a', 'b']
+>>> b
+['a', 'b']
+
+还可以这样：
+>>> name='alex li'
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9, 'a', 'b']
+>>> a.extend(name)
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9, 'a', 'b', 'a', 'l', 'e', 'x', ' ', 'l', 'i']
+
+判断包含与否：
+>>> a
+[3, 4, 1, 2, 6, 7, 8, 9, 'a', 'b', 'a', 'l', 'e', 'x', ' ', 'l', 'i']
+>>> if 4 in a:
+...      print("4 in a")
+... 
+4 in a

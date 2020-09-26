@@ -1,0 +1,385 @@
+参考资料：
+http://www.cnblogs.com/wupeiqi/articles/5133343.html
+
+函数：将一堆功能封装成一个函数
+定义函数：
+#!/usr/bin/env python
+def mail():
+  i = 123
+  i +=1
+  print(i)          #定义完函数后，python解释器运行到函数的代码后会将这个函数放进内存，后面的脚本如果调用这个函数，则会执行
+
+mail()          # 调用函数的一般方法
+f = mail        # 也可以这样把函数赋值，相当于重命名，下面再加双括号也可以调用函数
+f()
+
+函数的返回值：函数执行的结果告诉我，通过返回值来完成
+
+发邮件的函数，实例：这个例子没有实现成功，以后再研究ssl加密邮件
+
+#!/usr/bin/env python
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formataddr
+
+def mail():
+    ret = True              #初始化一个值
+    try:
+        msg = MIMEText('邮件内容正文是这个','plain','utf-8')
+        msg['From'] = formataddr(['发件人','发件邮箱'])
+        msg['To'] = formataddr(['收件人','收件邮箱'])
+        msg['Subject'] = '主题'
+        
+        server = smtplib.SMTP('发送邮件的邮件服务器地址，例如：smtp.126.com', 25)  # 注意这里端口号是25
+        server.login('邮箱账号','邮箱密码')
+        server.sendmail('发件地址',['收件地址',],msg.as_string())
+        server.quit()
+    except Exception:
+        ret = False
+    return ret            #注意理解函数的返回值到底是什么意思，这里的ret被函数里面的过程改变了值。函数可以返回任何类型的值，列表元组字典等等... 
+                          #如果函数里面没有出现return，函数默认返回一个None; return后面的语句不会再继续执行了；这些特性和php一样
+
+ret = mail()
+if ret:
+    print("发送成功！")
+else:
+    print("发送失败！")
+
+
+理解函数的返回值：
+#!/usr/bin/env python
+def show():
+    print('a')
+    return[11,22]
+    print('b')          
+ret = show()            # 函数的return值被赋给了ret
+print(ret)
+
+def show_1():
+    print('a')
+    if 1 == 0:          # 这里可以使用条件判断要不要返回，返回后，下面的代码将不会执行
+        return[11,22]
+    print('b')          
+ret = show_1()            # 函数的return值被赋给了ret
+print(ret)
+
+理解函数的普通参数：
+def mail(user):     #user是形式参数
+    ret = True
+    try:
+        msg = MIMEText('邮件内容正文是这个','plain','utf-8')
+        msg['From'] = formataddr(['发件人','发件邮箱'])
+        msg['To'] = formataddr(['收件人','收件邮箱'])
+        msg['Subject'] = '主题'
+        
+        server = smtplib.SMTP('发送邮件的邮件服务器地址，例如：smtp.126.com', 25)  # 注意这里端口号是25
+        server.login('邮箱账号','邮箱密码')
+        server.sendmail('发件地址',[user,],msg.as_string())   #注意这里的变量
+        server.quit()
+    except Exception:
+        ret = False
+    return ret   
+
+调用这个函数的时候，这样写：
+mail('12345@qq.com') 这样就能给12345@qq.com发邮件了
+
+也可以有多个参数，使用逗号分隔，还可以在定义函数的时候设定默认参数
+默认参数,在定义函数的时候就赋值，相当于一个默认值：
+def show(a1, a2=999)   默认参数只能写在后面，不能这样写：def show(a1=999, a2)
+
+指定参数：
+def show(a1,a2)
+  print(a1,a2)
+show(a2=999,a1=111)  #这样在函数执行的时候就能改变顺序了    这还是属于python的灵活性？
+
+动态参数：
+
+#!/usr/bin/env python
+def show(*args):            #一个*的转换成元组
+    print(args)
+show(111,222,333)
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+(111, 222, 333)
+
+Process finished with exit code 0
+
+def make_pizza(size,*toppings):
+  """概述要制作的piza"""
+  print("\nMaking a "+str(size)+"-inch pizza with the following toppings:")
+  for topping in toppings:
+    print("-"+topping)
+make_pizza(16,'pepperoni')    
+make_pizza(12,'mushrooms','green peppers','extra cheese')   #  函数自动将第一个实参传给第一个形参，后面所有的实参传给第二个形参
+
+输出：
+Making a 16-inch pizza with the following toppings:
+-pepperoni
+
+Making a 12-inch pizza with the following toppings:
+-mushrooms
+-green peppers
+-extra cheese
+
+def build_profile(first,last,**user_info):
+    """创建一个空字典，用于接收用户信息"""
+    profile = {}
+    profile['first_name'] = first
+    profile['last_name'] = last
+    for key,value in user_info.items():
+        profile[key] = value
+    return profile
+user_profile = build_profile('albert','einstein',location= 'princeton',field='physics')    # 这里的key和value的关系应该用=来表示
+#user_profile = build_profile('albert','einstein',{"location: princeton","field:physics"})    # 注意这里不能这样写，为什么这里不能传入一个字典？
+
+print(user_profile)
+
+输出：
+{'first_name': 'albert', 'last_name': 'einstein', 'location': 'princeton', 'field': 'physics'}   #以字典的形式输出
+
+两个参数：
+#!/usr/bin/env python
+def show(*args, **kwargs):            #一个*的转换成元组，两个*的转换成字典，输出的时候会智能转换
+    print(args,type(args))
+    print(kwargs,type(kwargs))
+show(111,222,333,n1='aaa',n2='bbb')
+  
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+(111, 222, 333) <class 'tuple'>
+{'n1': 'aaa', 'n2': 'bbb'} <class 'dict'>
+
+Process finished with exit code 0
+还能这样玩：
+#!/usr/bin/env python
+def show(*args, **kwargs):            #一个*的转换成元组，两个*的转换成字典
+    print(args, type(args))
+    print(kwargs, type(kwargs))
+l = [111,222,333]
+d = {'k1':'v1','k2':'v2','k3':'v3'}
+#show(l,d)               
+# 如果这样写，则函数会自动把l,d当做第一个参数的值，输出：([111, 222, 333], {'k1': 'v1', 'k2': 'v2', 'k3': 'v3'}) <class 'tuple'>
+# 第二句print打印一个空的字典：{} <class 'dict'>
+#于是需要这样写
+show(*l, **d)         #起始这里的*可以理解为一种占位符，一种记号，特殊的约定
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+(111, 222, 333) <class 'tuple'>
+{'k1': 'v1', 'k2': 'v2', 'k3': 'v3'} <class 'dict'>
+
+Process finished with exit code 0
+
+使用动态参数实现字符串格式化：
+首先，先回顾一下字符串的格式化
+#!/usr/bin/env python
+s1 = '{0} is {1}'       # 这里单双引号效果一样
+result = s1.format('alex','dashen')
+print(result)       # 这里打印出alex is dashen
+
+name = 'Jim'
+age = 18
+# s2 = "my name is %s, i'm %d years old." %('Jim',18)
+s2 = "my name is %s, i'm %d years old." %(name,age)  # 如果这里写成变量，那么这里的变量必须在前面已经有定义过；
+# name ='Jim'               #程序是之上而下执行的，就算这里再赋值也不行
+# age = 0
+print(s2)           #打印出：my name is Jim, i'm 18 years old.
+
+
+#!/usr/bin/env python
+# s1 = '{0} is {1}'
+# result = s1.format('alex','dashen')
+# print(result)
+
+# 来传列表进去
+# s1 = '{0} is {1}'
+# li = ['alex','dashen']
+# result = s1.format(*li)   #一个*
+# print(result)
+
+#传字典进去
+s2 = '{name} is {actor}'
+dic = {"name":"alex","actor":"dashen"}
+result = s2.format(**dic)       # 两个*
+print(result)
+
+
+简单函数表达式，Lambda表达式：简单函数的简单表达式
+func = lambda a: a+1    #只能一行代码
+# 创建形式参数 a
+# 函数内容：a+1 并把结果return
+ret = func(99)
+print(ret)
+
+与以下函数是同一个意思：
+def func(a):
+  a  += 1
+  return a
+ret = func(99)
+print(ret)
+
+内置函数，不用导入模块可直接使用的
+参考资料：
+http://www.cnblogs.com/wupeiqi/articles/4943406.html
+http://images2015.cnblogs.com/blog/425762/201601/425762-20160115210339553-378378117.png
+all()函数  传入一个序列，所有的是真才是真
+False  所有空的类型都是False, 例如空列表，空字符串，空元组，空字典...0也是False, 注意空格是真，检查真假的方法：bool() 
+True  其他非空非0
+any()函数，只要有一个真，则返回真
+
+#!/usr/bin/env python
+class Foo:
+
+    def __repr__(self):
+        return 'aaabbbccc'    #面向对象的时候再说
+
+f = Foo()
+ret = ascii(f)
+print(ret)
+输出：aaabbbccc
+
+
+bin() 返回二进制
+>>> bin(3)
+'0b11'
+
+#!/usr/bin/env python
+p = bytearray('你是谁',encoding='utf-8')
+print(p)
+输出：bytearray(b'\xe4\xbd\xa0\xe6\x98\xaf\xe8\xb0\x81')   #转换成字节数组
+
+#!/usr/bin/env python
+p = bytes('你是谁',encoding='utf-8')
+print(p)
+输出：b'\xe4\xbd\xa0\xe6\x98\xaf\xe8\xb0\x81'   #转换成字节字符串
+
+#!/usr/bin/env python
+f = lambda x:x+1
+ret = f(5)
+print(ret)
+
+输出：6
+callable()  查看某个函数是否能被调用，能否被执行，是不是函数
+#!/usr/bin/env python
+f = lambda x:x+1
+print(callable(f))
+
+输出：True  #说明函数f()可以被调用
+#!/usr/bin/env python
+l =[]
+print(callable(l))
+输出：False
+
+以下两个成对使用：（动态验证码的时候用）
+chr()  将ascii码转换成字符
+ord()  将一个字符转换成ascii码
+>>> ord('等')
+31561
+>>> chr(31561)
+'等'
+
+
+>>> import random
+>>> random.random()
+0.6165007594649494
+>>> random.random()
+0.4836824829915579
+
+>>> random.randint(100,200)
+180
+
+#!/usr/bin/env python
+li = ['a','b','c','d']
+for i in enumerate(li,1):    # 这里的1代表初始值是1
+    print(i)
+
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+(1, 'a')
+(2, 'b')
+(3, 'c')
+(4, 'd')
+
+Process finished with exit code 0
+
+#!/usr/bin/env python
+li = ['a','b','c','d']
+for i,item in enumerate(li,1):
+    print(i,item)
+
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+1 a
+2 b
+3 c
+4 d
+
+Process finished with exit code 0
+
+eval() 函数，执行字符串里面的公式，代码等等，例如将excel里面的内容录入到数据库，excel有公式，用这个函数可以将公式执行完后将结果录入数据库
+#!/usr/bin/env python
+str = '4*2'
+print(eval(str))
+
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+8
+
+Process finished with exit code 0
+
+map()和filter()函数，参考资料：http://www.cnblogs.com/wupeiqi/articles/4943406.html
+map()函数，map(函数,参数）这样的格式使用
+#!/usr/bin/env python
+li = [11,22,33,44]
+new_li = map(lambda i:i+1, li)
+print(list(new_li))
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+[12, 23, 34, 45]
+
+Process finished with exit code 0
+
+#!/usr/bin/env python
+li = [11,22,33,44]
+def func(i):          #可以先定义一个函数，注意这个函数要有返回值
+    i *=100
+    return i
+new_li = map(func,li)  #这里调用函数的时候不能有()，map()函数的功能相当于把第二个参数（序列）的元素相当于for循环出来，一个个拿到func()函数里面去执行
+#然后将结果存到一个新的对象new_li里面，所以下面需要用list()转换一个类型再打印出来
+print(list(new_li))   #输出：[1100, 2200, 3300, 4400]
+
+filter()函数，跟map()不同，filter将符合要求的元素才保留下来
+
+#!/usr/bin/env python
+li = [11,22,33,44]
+def func(i):
+    if i >= 33:
+        return True
+    else:
+        return False
+
+new_li = filter(func,li)
+print(list(new_li))
+
+打印出：[33, 44]
+
+如果这里用map()函数，则会把所有结果都存到一个新的对象里面
+#!/usr/bin/env python
+li = [11,22,33,44]
+def func(i):
+    if i >= 33:
+        return True
+    else:
+        return False
+
+new_li = map(func,li)
+print(list(new_li))
+
+输出：[False, False, True, True]
+
+
+globals() 返回当前所有可用的变量
+oct() 8进制
+round()  四舍五入
+dir()  只拿到k
+vars() 拿到所有方法的k和v
+open() 打开文件

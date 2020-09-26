@@ -1,0 +1,133 @@
+http://www.cnblogs.com/alex3714/articles/5188179.html
+类 面向对象 继承 私有属性 
+
+面向对象和面向过程编程
+其实使用类的写法也能写出面向过程编程，面向过程就是一步步走；适合写小型的脚本；
+面向对象就是先把一个个事物都写成对象，人，买票，坐火车，坐飞机，坐地铁等等，适合写逻辑复杂的大型项目；
+面向对象和面向过程其实是编程思想上的不同；
+self 表示实例本身
+
+类实例
+class Role(object): #定义一个类， class是定义类的语法，Role是类名，(object)是新式类的写法，必须这样写，以后再讲为什么
+    def __init__(self,name,role,weapon,life_value=100,money=15000): #初始化函数，在生成一个角色时要初始化的一些属性就填写在这里
+        self.name = name #__init__中的第一个参数self,和这里的self都 是什么意思？ 看下面解释
+        self.role = role
+        self.weapon = weapon
+        self.life_value = life_value
+        self.money = money
+
+    def shot(self):
+        print("shooting...")
+
+    def got_shot(self):
+        print("ah...,I got shot...")
+
+    def buy_gun(self, gun_name):
+        print("just bought %s" % gun_name)
+
+r1 = Role('Alex','police','AK47’) #生成一个角色
+r2 = Role('Jack','terrorist','B22’)  #生成一个角色
+
+继承实例
+#!_*_coding:utf-8_*_
+#__author__:"Alex Li"
+ 
+ 
+ 
+class SchoolMember(object):
+    members = 0 #初始学校人数为0
+    def __init__(self,name,age):
+        self.name = name
+        self.age = age
+ 
+    def  tell(self):
+        pass
+ 
+    def enroll(self):
+        '''注册'''
+        SchoolMember.members +=1
+        print("\033[32;1mnew member [%s] is enrolled,now there are [%s] members.\033[0m " %(self.name,SchoolMember.members))
+     
+    def __del__(self):
+        '''析构方法'''
+        print("\033[31;1mmember [%s] is dead!\033[0m" %self.name)
+class Teacher(SchoolMember):
+    def __init__(self,name,age,course,salary):
+        super(Teacher,self).__init__(name,age)
+        self.course = course
+        self.salary = salary
+        self.enroll()
+ 
+ 
+    def teaching(self):
+        '''讲课方法'''
+        print("Teacher [%s] is teaching [%s] for class [%s]" %(self.name,self.course,'s12'))
+ 
+    def tell(self):
+        '''自我介绍方法'''
+        msg = '''Hi, my name is [%s], works for [%s] as a [%s] teacher !''' %(self.name,'Oldboy', self.course)
+        print(msg)
+ 
+class Student(SchoolMember):
+    def __init__(self, name,age,grade,sid):
+        super(Student,self).__init__(name,age)
+        self.grade = grade
+        self.sid = sid
+        self.enroll()
+ 
+ 
+    def tell(self):
+        '''自我介绍方法'''
+        msg = '''Hi, my name is [%s], I'm studying [%s] in [%s]!''' %(self.name, self.grade,'Oldboy')
+        print(msg)
+ 
+if __name__ == '__main__':
+    t1 = Teacher("Alex",22,'Python',20000)
+    t2 = Teacher("TengLan",29,'Linux',3000)
+ 
+    s1 = Student("Qinghua", 24,"Python S12",1483)
+    s2 = Student("SanJiang", 26,"Python S12",1484)
+ 
+    t1.teaching()
+    t2.teaching()
+    t1.tell()
+
+
+python多态实例
+Pyhon 很多语法都是支持多态的，比如 len(),sorted(), 你给len传字符串就返回字符串的长度，传列表就返回列表长度。
+#_*_coding:utf-8_*_
+ 
+ 
+class Animal(object):
+    def __init__(self, name):  # Constructor of the class
+        self.name = name
+ 
+    def talk(self):              # Abstract method, defined by convention only
+        raise NotImplementedError("Subclass must implement abstract method")
+ 
+ 
+class Cat(Animal):
+    def talk(self):
+        print('%s: 喵喵喵!' %self.name)
+ 
+ 
+class Dog(Animal):
+    def talk(self):
+        print('%s: 汪！汪！汪！' %self.name)
+ 
+ 
+ 
+def func(obj): #一个接口，多种形态
+    obj.talk()
+ 
+c1 = Cat('小晴')
+d1 = Dog('李磊')
+ 
+func(c1)
+func(d1)
+
+E:\python3\python.exe E:/pythonprojects/login/test.py
+小晴: 喵喵喵!
+李磊: 汪！汪！汪！
+
+Process finished with exit code 0

@@ -1,0 +1,168 @@
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2'}
+dic2 = dict(k1='v1',k2='v2')  #这里有两种创建字典的方式，两种方式是等价的。
+print(dic1)
+print(dic2)
+
+print(dic1.get('k1'))     #get方法
+new_dic = dic1.fromkeys(['k1','k2'],'nv1')  #从已有的字典获取键值，赋新值生成新的字典；第一个参数传入一个序列，第二个参数传入值；
+print(new_dic)
+
+dic1.clear()   #清空字典里的所有元素
+print(dic1)
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+{'k1': 'v1', 'k2': 'v2'}
+{'k1': 'v1', 'k2': 'v2'}
+v1
+{'k1': 'nv1', 'k2': 'nv1'}
+{}
+
+Process finished with exit code 0
+
+根据键值获取字典的元素：
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2'}
+dic2 = dict(k1='v1',k2='v2')  #这里有两种创建字典的方式，两种方式是等价的。
+print(dic1['k1'])
+print(dic1['k2'])
+print(dic1['k3'])     #这里字典里不存在键值'k3'，会报错
+
+使用get()方法：
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2'}
+print(dic1.get('k1'))
+print(dic1.get('k2'))
+print(dic1.get('k3'))   #这里虽然键值不存在，但不会报错，会给出一个默认的None
+会输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+v1
+v2
+None
+
+Process finished with exit code 0
+
+键值不存在，可以设置一个默认值：
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2'}
+dic2 = dict(k1='v1',k2='v2')  #这里有两种创建字典的方式，两种方式是等价的。
+print(dic1.get('k3','laoda'))
+这里输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+laoda
+
+Process finished with exit code 0
+
+获取全部的键值、值、键值和值：
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2'}
+print(dic1.keys())
+print(dic1.values())
+print(dic1.items())
+
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+dict_keys(['k1', 'k2'])
+dict_values(['v1', 'v2'])
+dict_items([('k1', 'v1'), ('k2', 'v2')])
+
+Process finished with exit code 0
+
+#!/usr/bin/env python
+dic1 = {'k1':'v1','k2':'v2','k3':'v3'}
+for k in dic1.keys():
+    print(k)                #输出所有的键值
+for v in dic1.values():
+    print(v)                #输出所有的值
+for k,v in dic1.items():
+    print(k,v)              #输出所有的键值和值
+    
+#!/usr/bin/env python
+dic = {'k1':'v1','k2':'v2','k3':'v3'}
+dic.pop('k2')               #弹出一个元素，至少需要指定一个参数，即键值
+print(dic)
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+{'k1': 'v1', 'k3': 'v3'}
+
+Process finished with exit code 0
+
+popitem()   字典是无序的，这个方法会随机弹出一对键值对
+#!/usr/bin/env python
+dic = {'k1':'v1','k2':'v2','k3':'v3'}
+dic.popitem()
+print(dic)
+dic.popitem()
+print(dic)
+dic.popitem()
+print(dic)
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+{'k1': 'v1', 'k2': 'v2'}
+{'k1': 'v1'}
+{}
+
+Process finished with exit code 0
+
+dic1 = {'k1':'v1','k2':'v2'}
+dic2 = dic1.update({'k3':'v3','k2':'v32'})
+print(dic2)     #这里会输出一个none，所以还不能这样赋值，原来的dic1已经更新了,注意这里的update是会覆盖合并
+print(dic1)
+输出：
+None
+{'k1': 'v1', 'k2': 'v32', 'k3': 'v3'}
+
+按照条件将一个集合的元素放进字典：
+#!/usr/bin/env python
+li = [11,22,33,44,55,66,77,88,99,90,]
+l1 = []
+l2 = []
+dic = {}
+for v in li:
+    if v > 66:
+        l1.append(v)
+    else:
+        l2.append(v)
+dic['k1']=l1
+dic['k2']=l2
+print(dic)
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+{'k1': [77, 88, 99, 90], 'k2': [11, 22, 33, 44, 55, 66]}
+
+Process finished with exit code 0
+
+下面这样写比较高级：                           #我们的最终目的是要用一个字典来存放两组值，这两组值是列表的形式，两组值分别对应两个键，
+#!/usr/bin/env python
+dic = {}                                     #初始化一个字典
+li_all = [11,22,33,44,55,66,77,88,99,90,]    #这里是需要处理的数据集合
+for i in li_all:                             #使用for循环依次取出列表中的数据，等待处理
+    if i > 66:
+        if 'k1' in dic.keys():               #使用keys()方法取出字典里的键，用if in语句来判断'k1'是否已经存在
+            dic['k1'].append(i)              #如果存在，直接使用列表的append()方法，将符合要求的值加进列表
+        else:
+            dic['k1'] = [i,]                 #如果键'k1'不存在则创建一个列表
+    else:
+        if 'k2' in dic.keys():              
+            dic['k2'].append(i)
+        else:
+            dic['k2'] = [i,]
+print(dic)                                   #这个例子说明，字典里面是可以放列表的，涉及到字典和列表的方法，比较灵活
+
+最后打印出：
+D:\Python36\python.exe D:/pythonproject/d1/checkuser.py
+{'k2': [11, 22, 33, 44, 55, 66], 'k1': [77, 88, 99, 90]}
+
+Process finished with exit code 0
+
+>>> info = {'stu1102': 'LongZe Luola', 'stu1103': 'XiaoZe Maliya'}
+#setdefault
+>>> info.setdefault("stu1106","Alex")
+'Alex'
+>>> info
+{'stu1102': 'LongZe Luola', 'stu1103': 'XiaoZe Maliya', 'stu1106': 'Alex'}   # 原info字典没有'stu1106'，所以会给一个默认值'Alex'
+>>> info.setdefault("stu1102","龙泽萝拉")  
+'LongZe Luola'
+>>> info
+{'stu1102': 'LongZe Luola', 'stu1103': 'XiaoZe Maliya', 'stu1106': 'Alex'}   # 原info字典有"stu1102"，所以这里不会赋值

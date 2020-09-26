@@ -1,0 +1,21 @@
+对文件操作不需要有关闭操作，格式如下：
+with open('h.log') as f:
+    f.write()    #这里直接写如文件，后面不用有f.close()
+例如：
+with open("test.txt",'a') as f:    #这里'a'是参数，表示追加，如果是'w'的话是会先覆盖掉原来的文件，再写入
+    f.write('test test\n')
+    
+再如：wupeiqi老师讲的一个例子：亲自测试没有成功，下面的装饰器报错，原因待深入学习。
+@contextlib.contextmanager    #装饰器，不知道是干嘛的
+def show():
+    print('123')
+    yield          #这里的yield可以理解为do，执行，这里的show()函数里面可以将关闭文件的功能预先写好，所以上面的with open这种格式不用再close()
+    print('456')
+
+with show():
+    print('9999')
+
+执行的结果输出：
+123
+9999
+456

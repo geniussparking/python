@@ -1,0 +1,33 @@
+from urllib import request
+from bs4 import BeautifulSoup   # pip install beautifulsoup4
+import gevent,time
+from gevent import monkey   # 默认情况下，gevent不认识urllib的IO操作，这里需要给gevent打补丁，然后才能支持异步并发
+monkey.patch_all() #把当前程序的所有的io操作给我单独的做上标记，需要加上这句话
+error_list = []   # 错误列表
+exec_list = []  # 执行列表
+def f(url):
+    try:
+        data = request.urlopen(url,timeout=30).read()
+        title = BeautifulSoup(data,"lxml").title.string
+        print(url,'Tile: %s' % title)
+    except:
+        print(url,"error")
+        error_list.append(url)
+with open("domains.txt","r",encoding="utf-8") as f_obj:
+    while True:
+        try:
+            for i in range(50):
+                raw_line = f_obj.__next__().strip()
+                if len(raw_line) > 0:   # 空行过滤掉
+                    line = raw_line.split("\t")
+                    print("正在获取：",line[0])
+                    exec_list.append(line[0])
+        except StopIteration as e:
+            print("f_obj迭代器循环完毕")
+        size_exec_list = len(exec_list)
+        if size_exec_list == 0:
+            print("无更多任务，退出。")
+            break
+        print("本次执行数量：",size_exec_list)
+        gevent.joinall([(gevent.spawn(f,'http://www.'+exec_list[i])) for i in range(size_exec_list)])   # 不能用牛逼形容的列表生成式
+        exec_list.clear()  # 每循环一次清空执行列表

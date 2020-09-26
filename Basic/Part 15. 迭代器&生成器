@@ -1,0 +1,155 @@
+参考资料：http://www.cnblogs.com/alex3714/articles/5143440.html
+迭代器
+
+迭代器是访问集合元素的一种方式。迭代器对象从集合的第一个元素开始访问，直到所有的元素被访问完结束。
+迭代器只能往前不会后退，不过这也没什么，因为人们很少在迭代途中往后退。另外，迭代器的一大优点是不要求事先准备好整个迭代过程中所有的元素。
+迭代器仅仅在迭代到某个元素时才计算该元素，而在这之前或之后，元素可以不存在或者被销毁。
+这个特点使得它特别适合用于遍历一些巨大的或是无限的集合，比如几个G的文件
+
+特点：
+
+1. 访问者不需要关心迭代器内部的结构，仅需通过next()方法不断去取下一个内容
+2. 不能随机访问集合中的某个值 ，只能从头到尾依次访问
+3. 访问到一半时不能往回退
+4. 便于循环比较大的数据集合，节省内存
+
+生成一个迭代器
+#!/usr/bin/env python
+#!-*- coding:utf-8 -*-
+names = iter(['a','b','c','d'])
+print(type(names))      # 迭代器iterator类型  <class 'list_iterator'>
+print(names.__next__())  # 使用__next__方法一个个取出迭代器里面的元素
+print(names.__next__())
+print(names.__next__())
+print(names.__next__())  #迭代器只有这一个__next__()方法
+
+迭代的使用：
+f = open("test.txt")
+for line in f:
+  print(line)
+  
+  
+生成器：generator
+定义：一个函数调用时返回一个迭代器，那这个函数就叫做生成器（generator），如果函数中包含yield语法，那这个函数就会变成生成器 
+生成器实现异步功能，保存之前程序运行的状态，可以去执行别的任务，再接着执行
+
+def cash_out(amount):
+    while amount >0:
+        amount -= 100
+        yield 100
+        print("擦，又来取钱了。。。败家子！")
+ATM = cash_out(500)   # 这里不能直接print(ATM) 会报错
+print(type(ATM))    # 打印出：<class 'generator'>，说明这个函数是生成器generator
+print("取到钱 %s 万" % ATM.__next__())    #这里相当于是调用的Class ATM的方法__next__,和上面的yield相对应
+print("花掉花掉!")    #这里跟循环不同的，这些语句都不在循环里面，相当于说生成器可以暂停循环，保留执行的位置，下面调用了继续执行下面的
+print("取到钱 %s 万" % ATM.__next__())
+print("取到钱 %s 万" % ATM.__next__())  
+print("花掉花掉!")
+print("取到钱 %s 万" % ATM.__next__())
+print("取到钱 %s 万" % ATM.__next__())
+print("取到钱 %s 万" % ATM.__next__()) #到这时钱就取没了,再取就报错了
+print("取到钱 %s 万" % ATM.__next__())
+
+输出：
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+<class 'generator'>
+取到钱 100 万
+花掉花掉!
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+花掉花掉!
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+擦，又来取钱了。。。败家子！
+Traceback (most recent call last):
+  File "D:/pythonproject/d1/test2.py", line 17, in <module>
+    print("取到钱 %s 万" % ATM.__next__())  # 到这时钱就取没了,再取就报错了
+StopIteration
+
+Process finished with exit code 1
+
+#!/usr/bin/env python
+#!-*- coding:utf-8 -*-
+def cash_out(amount):
+    while amount > 0:
+        amount -= 100
+        print("擦，又来取钱了。。。败家子！")
+        yield 100
+
+ATM = cash_out(500)   # 这里不能直接print(ATM) 会报错
+print(type(ATM))     # 打印出：<class 'generator'>，说明这个函数是生成器generator
+print("取到钱 %s 万" % ATM.__next__())
+print("花掉花掉01!")
+print("取到钱 %s 万" % ATM.__next__())
+print("取到钱 %s 万" % ATM.__next__())
+print("花掉花掉02!")
+print("取到钱 %s 万" % ATM.__next__())
+# print("取到钱 %s 万" % ATM.__next__())
+# print("取到钱 %s 万" % ATM.__next__())  # 到这时钱就取没了,再取就报错了
+# print("取到钱 %s 万" % ATM.__next__())
+
+D:\Python36\python.exe D:/pythonproject/d1/test2.py
+<class 'generator'>
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+花掉花掉01!
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+花掉花掉02!
+擦，又来取钱了。。。败家子！
+取到钱 100 万
+
+Process finished with exit code 0
+
+注意：可以使用断点调试的方法，一步步看运行的过程
+
+吃包子的例子：
+import time
+def consumer(name):
+    print("%s 准备吃包子啦!" %name)
+    while True:
+       baozi = yield
+       print("包子[%s]来了,被[%s]吃了!" %(baozi,name))
+ 
+def producer(name):
+    c = consumer('A')
+    c2 = consumer('B')
+    c.__next__()
+    c2.__next__()
+    print("%s开始准备做包子啦!" %name)
+    for i in range(10):
+        time.sleep(1)
+        print("做了2个包子!")
+        c.send(i)
+        c2.send(i)
+ 
+producer("alex")
+注：使用断点调试一步步看执行过程；
+
+# 稍微修改
+import time
+def consumer(name):
+    print("%s 准备吃包子啦!" % name)
+    while True:
+        baozi = yield
+        print("包子[%s]来了,被[%s]吃了!" % (baozi, name))
+
+def producer(name):
+    c = consumer('A')
+    c2 = consumer('B')
+    c.__next__()
+    c2.__next__()
+    print("%s开始准备做包子啦!" %name)
+    for i in range(10):
+        time.sleep(1)
+        print("包子%d好了!" %i)
+        c.send(i)
+        c2.send(i)
+
+producer('Alex')
